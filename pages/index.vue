@@ -4,9 +4,9 @@
       <h1 class="title">
         TCG
       </h1>
-      <h2 class="subtitle">
+      <p class="subtitle">
         Team Color Generator
-      </h2>
+      </p>
     </div>
     <div class="content">
       <div class="colors-wrapper">
@@ -23,7 +23,7 @@
       <button @click="randomize" class="button--randomize">Randomize</button>
     </div>
     <div class="links">
-      <a href="https://lokecarlsson.se" target="_blank" class="button--green" rel="noopener">Author</a>
+      <a href="https://lokecarlsson.se" target="_blank" class="button--grey" rel="noopener">Author</a>
       <a href="https://github.com/LokeCarlsson/TCG" target="_blank" class="button--grey" rel="noopener">GitHub</a>
     </div>
   </section>
@@ -78,6 +78,13 @@
   min-height: 100vh;
 }
 
+.header {
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .content {
   margin: auto;
   display: grid;
@@ -85,8 +92,11 @@
 
 .colors-wrapper {
   padding: 20px;
-  display: flex;
+  display: grid;
+  grid-auto-flow: column;
   align-items: center;
+  justify-content: center;
+  grid-gap: 20px;
 }
 
 .colors-wrapper p {
@@ -98,7 +108,10 @@
 }
 
 .team1, .team2 {
-  display: grid;
+  font-size: 22px;
+  font-weight: 500;
+  width: 100px;
+  padding: 30px;
 }
 
 .links {
@@ -107,36 +120,20 @@
   padding: 10px;
 }
 
-.button--green {
-  display: inline-block;
-  border-radius: 4px;
-  border: 1px solid #3b8070;
-  color: #3b8070;
-  text-decoration: none;
-  padding: 10px 30px;
-}
-
-.button--green:hover {
-  color: #fff;
-  background-color: #3b8070;
-}
-
 .button--grey {
   display: inline-block;
-  border-radius: 4px;
-  border: 1px solid #35495e;
   color: #35495e;
   text-decoration: none;
-  padding: 10px 30px;
+  padding: 5px 10px;
   margin-left: 15px;
 }
 
 .button--grey:hover {
-  color: #fff;
-  background-color: #35495e;
+  color: black;
 }
 
 .button--randomize {
+  font-size: 20px;
   display: inline-block;
   border-radius: 4px;
   border: 1px solid #3b8070;
