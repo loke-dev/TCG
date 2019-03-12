@@ -1,9 +1,8 @@
 {
   "name": "tcg",
   "version": "1.0.0",
-  "description": "Nuxt.js project",
+  "description": "Team Color Generator",
   "author": "LokeCarlsson <carlssonloke@gmail.com>",
-  "private": true,
   "dependencies": {
     "nuxt": "latest",
     "@nuxtjs/pwa": "latest"
