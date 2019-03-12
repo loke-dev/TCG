@@ -22,7 +22,6 @@
       </div>
     </div>
     <div class="links">
-      <button @click="randomize" class="button--randomize">🔄</button>
       <a href="https://lokecarlsson.se" target="_blank" class="button--grey" rel="noopener">Author</a>
       <a href="https://github.com/LokeCarlsson/TCG" target="_blank" class="button--grey" rel="noopener">GitHub</a>
     </div>
@@ -40,9 +39,6 @@
     mounted () {
     },
     methods: {
-      randomize() {
-        this.colors = this.shuffle(this.colors)
-      },
       shuffle() {
         const startColors = [
           {
