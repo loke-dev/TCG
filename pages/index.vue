@@ -139,11 +139,17 @@
 .button--randomize {
   display: inline-block;
   border-radius: 4px;
-  border: 1px solid #b718df;
-  color: #b718df;
+  border: 1px solid #3b8070;
+  color: #3b8070;
+  background-color: white;
   text-decoration: none;
   padding: 10px 30px;
   cursor: pointer;
   margin: auto;
+}
+
+.button--randomize:hover {
+  color: #fff;
+  background-color: #3b8070;
 }
 </style>
