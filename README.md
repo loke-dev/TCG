@@ -1,6 +1,6 @@
 # tcg
 
-> Nuxt.js project
+> Team Color Generator
 
 ## Build Setup
 
