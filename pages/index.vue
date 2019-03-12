@@ -20,9 +20,9 @@
           <span>{{colors[3].name}}</span>
         </div>
       </div>
-      <button @click="randomize" class="button--randomize">Randomize</button>
     </div>
     <div class="links">
+      <button @click="randomize" class="button--randomize">🔄</button>
       <a href="https://lokecarlsson.se" target="_blank" class="button--grey" rel="noopener">Author</a>
       <a href="https://github.com/LokeCarlsson/TCG" target="_blank" class="button--grey" rel="noopener">GitHub</a>
     </div>
@@ -134,19 +134,8 @@
 
 .button--randomize {
   font-size: 20px;
-  display: inline-block;
-  border-radius: 4px;
-  border: 1px solid #3b8070;
-  color: #3b8070;
-  background-color: white;
   text-decoration: none;
-  padding: 10px 30px;
   cursor: pointer;
   margin: auto;
-}
-
-.button--randomize:hover {
-  color: #fff;
-  background-color: #3b8070;
 }
 </style>
