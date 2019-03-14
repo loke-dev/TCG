@@ -12,8 +12,10 @@
     "precommit": "npm run lint"
   },
   "dependencies": {
+    "@nuxtjs/google-analytics": "^2.2.0",
+    "@nuxtjs/pwa": "latest",
     "nuxt": "latest",
-    "@nuxtjs/pwa": "latest"
+    "vuex-persistedstate": "^2.5.4"
   },
   "devDependencies": {
     "babel-eslint": "^7.1.1",
