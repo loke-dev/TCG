@@ -11,13 +11,13 @@
     <div class="content">
       <div class="colors-wrapper">
         <div class="team1">
-          <div :class="first" :key="first" />
-          <div :class="second" :key="second" />
+          <div :class="colors[0].id" :key="colors[0].id" />
+          <div :class="colors[1].id" :key="colors[1].id" />
         </div>
         <span class="versus">vs</span>
         <div class="team2">
-          <div :class="third" :key="third" />
-          <div :class="fourth" :key="fourth" />
+          <div :class="colors[2].id" :key="colors[2].id" />
+          <div :class="colors[3].id" :key="colors[3].id" />
         </div>
       </div>
     </div>
@@ -32,28 +32,7 @@
 export default {
     data () {
       return {
-        colors: this.shuffle()
-      }
-    },
-    mounted () {
-    },
-    computed: {
-      first() {
-        return this.colors[0].id
-      },
-      second() {
-        return this.colors[1].id
-      },
-      third() {
-        return this.colors[2].id
-      },
-      fourth() {
-        return this.colors[3].id
-      },
-    },
-    methods: {
-      shuffle() {
-        const startColors = [
+        colors: [
           {
             name: 'Blue',
             id: 'blue'
@@ -71,10 +50,19 @@ export default {
             id: 'yellow'
           }
         ]
-        return startColors
+      }
+    },
+    mounted() {
+      this.shuffle()
+    },
+    methods: {
+      shuffle() {
+         this.colors
           .map(a => [Math.random(), a])
           .sort((a, b) => a[0] - b[0])
-          .map(a => a[1]);
+          .forEach((e, i) => {
+            this.$set(this.colors, i, {name: e[1].name, id: e[1].id})
+          });
       }
     },
   }
