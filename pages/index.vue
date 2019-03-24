@@ -11,13 +11,13 @@
     <div class="content">
       <div class="colors-wrapper">
         <div class="team1">
-          <div :class="colors[0].id" />
-          <div :class="colors[1].id" />
+          <div :class="colors[0].id" :key="colors[0].id" />
+          <div :class="colors[1].id" :key="colors[1].id" />
         </div>
         <span class="versus">vs</span>
         <div class="team2">
-          <div :class="colors[2].id" />
-          <div :class="colors[3].id" />
+          <div :class="colors[2].id" :key="colors[2].id" />
+          <div :class="colors[3].id" :key="colors[3].id" />
         </div>
       </div>
     </div>
