@@ -11,13 +11,13 @@
     <div class="content">
       <div class="colors-wrapper">
         <div class="team1">
-          <span>{{colors[0].name}}</span>
-          <span>{{colors[1].name}}</span>
+          <div :class="colors[0].id" />
+          <div :class="colors[1].id" />
         </div>
         <span class="versus">vs</span>
         <div class="team2">
-          <span>{{colors[2].name}}</span>
-          <span>{{colors[3].name}}</span>
+          <div :class="colors[2].id" />
+          <div :class="colors[3].id" />
         </div>
       </div>
     </div>
@@ -44,6 +44,11 @@ import { mapState } from 'vuex';
 </script>
 
 <style>
+body {
+  background-color: #232323;
+  color: white;
+}
+
 .container {
   display: grid;
   min-height: 100vh;
@@ -74,14 +79,29 @@ import { mapState } from 'vuex';
   margin: 20px;
 }
 
+.title {
+  font-size: 5em;
+  color:#fefefe;
+  text-shadow:
+  0px 1px 0px #c0c0c0,
+  0px 2px 0px #b0b0b0,
+  0px 3px 0px #a0a0a0,
+  0px 4px 0px #909090,
+  0px 5px 10px rgba(0, 0, 0, 0.6);
+}
+
+.subtitle {
+  font-size: 2em;
+}
+
 .versus {
   padding: 30px;
+  font-size: 2.5rem;
 }
 
 .team1, .team2 {
   font-size: 22px;
   font-weight: 500;
-  width: 100px;
   padding: 30px;
 }
 
@@ -93,14 +113,14 @@ import { mapState } from 'vuex';
 
 .button--grey {
   display: inline-block;
-  color: #35495e;
+  color: #dadada;
   text-decoration: none;
   padding: 5px 10px;
   margin-left: 15px;
 }
 
 .button--grey:hover {
-  color: black;
+  color: rgb(133, 133, 133);
 }
 
 .button--randomize {
@@ -108,5 +128,36 @@ import { mapState } from 'vuex';
   text-decoration: none;
   cursor: pointer;
   margin: auto;
+}
+
+.red, .blue, .yellow, .purple {
+  height: 150px;
+  width: 150px;
+  margin: 50px 0;
+  border-radius: 0.5rem;
+}
+
+.red {
+  background: #cb2d3e;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to top right, #ef473a, #cb2d3e);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to top right, #ef473a, #cb2d3e); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+.blue {
+  background: #0575E6;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to top right, rgb(0, 35, 161), #0575E6);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to top right, rgb(0, 35, 161), #0575E6); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+.yellow {
+  background: #fffc00;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to top right, #fffd76, #fffc00);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to top right, #fffd76, #fffc00); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+.purple {
+  background: #6a3093;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to top right, #a044ff, #6a3093);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to top right, #a044ff, #6a3093); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 </style>
