@@ -29,17 +29,40 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
-
-  export default {
-    computed: mapState([
-      'colors'
-    ]),
+export default {
+    data () {
+      return {
+        colors: this.shuffle()
+      }
+    },
     mounted () {
     },
-    async fetch({store}) {
-      await store.commit('shuffle')
-    }
+    methods: {
+      shuffle() {
+        const startColors = [
+          {
+            name: 'Blue',
+            id: 'blue'
+          },
+          {
+            name: 'Red',
+            id: 'red'
+          },
+          {
+            name: 'Purple',
+            id: 'purple'
+          },
+          {
+            name: 'Yellow',
+            id: 'yellow'
+          }
+        ]
+        return startColors
+          .map(a => [Math.random(), a])
+          .sort((a, b) => a[0] - b[0])
+          .map(a => a[1]);
+      }
+    },
   }
 </script>
 
