@@ -11,13 +11,13 @@
     <div class="content">
       <div class="colors-wrapper">
         <div class="team1">
-          <div :class="colors[0].id" :key="colors[0].id" />
-          <div :class="colors[1].id" :key="colors[1].id" />
+          <div :class="first" :key="first" />
+          <div :class="second" :key="second" />
         </div>
         <span class="versus">vs</span>
         <div class="team2">
-          <div :class="colors[2].id" :key="colors[2].id" />
-          <div :class="colors[3].id" :key="colors[3].id" />
+          <div :class="third" :key="third" />
+          <div :class="fourth" :key="fourth" />
         </div>
       </div>
     </div>
@@ -36,6 +36,20 @@ export default {
       }
     },
     mounted () {
+    },
+    computed: {
+      first() {
+        return this.colors[0].id
+      },
+      second() {
+        return this.colors[1].id
+      },
+      third() {
+        return this.colors[2].id
+      },
+      fourth() {
+        return this.colors[3].id
+      },
     },
     methods: {
       shuffle() {
