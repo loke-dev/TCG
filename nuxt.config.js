@@ -1,6 +1,12 @@
 module.exports = {
   build: {},
-  head: {},
+  head: {
+    titleTemplate: 'TCG - Team Color Generator',
+    meta: [
+      { charset: 'utf-8' },
+      { name: 'viewport', content: 'width=device-width, initial-scale=1' }
+    ]
+  },
   server: {
     port: 8080
   },

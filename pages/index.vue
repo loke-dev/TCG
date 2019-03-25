@@ -112,7 +112,6 @@ body
   font-size: 2em
 
 .versus
-  padding: 2rem
   font-size: 2.5rem
 
 .links
@@ -137,12 +136,14 @@ body
   margin: auto
 
 .red, .blue, .yellow, .purple
-  height: 150px
-  width: 150px
-  margin: 50px 0
+  height: 12rem;
+  width: 10rem;
+  margin: 3rem;
   border-radius: 0.5rem
   @media (max-width: 500px)
-    width: 100px
+    height: 7rem
+    width: 25vw
+    margin: 20px 10px;
 
 .red
   background: #cb2d3e
