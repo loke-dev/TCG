@@ -68,115 +68,99 @@ export default {
   }
 </script>
 
-<style>
-body {
-  background-color: #232323;
-  color: white;
-}
+<style lang="sass">
+body
+  background-color: #232323
+  color: white
 
-.container {
-  display: grid;
-  min-height: 100vh;
-}
+.container
+  display: grid
+  min-height: 100vh
 
-.header {
-  margin: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+.header
+  margin: auto
+  display: flex
+  flex-direction: column
+  align-items: center
 
-.content {
-  margin: auto;
-  display: grid;
-}
+.content
+  margin: auto
+  display: grid
 
-.colors-wrapper {
-  padding: 20px;
-  display: grid;
-  grid-auto-flow: column;
-  align-items: center;
-  justify-content: center;
-  grid-gap: 20px;
-}
+.colors-wrapper
+  padding: 20px
+  display: grid
+  grid-auto-flow: column
+  align-items: center
+  justify-content: center
+  grid-gap: 20px
 
-.colors-wrapper p {
-  margin: 20px;
-}
+.colors-wrapper p
+  margin: 20px
 
-.title {
-  font-size: 5rem;
-  color:#fefefe;
-  text-shadow:
+.title
+  font-size: 5rem
+  color: #fefefe
+  text-shadow
   0px 1px 0px #c0c0c0,
   0px 2px 0px #b0b0b0,
   0px 3px 0px #a0a0a0,
   0px 4px 0px #909090,
-  0px 5px 10px rgba(0, 0, 0, 0.6);
-}
+  0px 5px 10px rgba(0, 0, 0, 0.6)
 
-.subtitle {
-  font-size: 2em;
-}
+.subtitle
+  font-size: 2em
 
-.versus {
-  padding: 2rem;
-  font-size: 2.5rem;
-}
+.versus
+  padding: 2rem
+  font-size: 2.5rem
 
-.links {
-  align-self: end;
-  justify-self: end;
-  padding: 10px;
-}
+.links
+  align-self: end
+  justify-self: end
+  padding: 10px
 
-.button--grey {
-  display: inline-block;
-  color: #dadada;
-  text-decoration: none;
-  padding: 5px 10px;
-  margin-left: 15px;
-}
+.button--grey
+  display: inline-block
+  color: #dadada
+  text-decoration: none
+  padding: 5px 10px
+  margin-left: 15px
 
-.button--grey:hover {
-  color: rgb(133, 133, 133);
-}
+.button--grey:hover
+  color: rgb(133, 133, 133)
 
-.button--randomize {
-  font-size: 20px;
-  text-decoration: none;
-  cursor: pointer;
-  margin: auto;
-}
+.button--randomize
+  font-size: 20px
+  text-decoration: none
+  cursor: pointer
+  margin: auto
 
-.red, .blue, .yellow, .purple {
-  height: 150px;
-  width: 150px;
-  margin: 50px 0;
-  border-radius: 0.5rem;
-}
+.red, .blue, .yellow, .purple
+  height: 150px
+  width: 150px
+  margin: 50px 0
+  border-radius: 0.5rem
+  @media (max-width: 500px)
+    width: 100px
 
-.red {
-  background: #cb2d3e;
-  background: -webkit-linear-gradient(to top right, #ef473a, #cb2d3e);
-  background: linear-gradient(to top right, #ef473a, #cb2d3e);
-}
+.red
+  background: #cb2d3e
+  background: -webkit-linear-gradient(to top right, #ef473a, #cb2d3e)
+  background: linear-gradient(to top right, #ef473a, #cb2d3e)
 
-.blue {
-  background: #0575E6;
-  background: -webkit-linear-gradient(to top right, rgb(0, 35, 161), #0575E6);
-  background: linear-gradient(to top right, rgb(0, 35, 161), #0575E6);
-}
+.blue
+  background: #0575E6
+  background: -webkit-linear-gradient(to top right, rgb(0, 35, 161), #0575E6)
+  background: linear-gradient(to top right, rgb(0, 35, 161), #0575E6)
 
-.yellow {
-  background: #fffc00;
-  background: -webkit-linear-gradient(to top right, #fffd76, #fffc00);
-  background: linear-gradient(to top right, #fffd76, #fffc00);
-}
+.yellow
+  background: #fffc00
+  background: -webkit-linear-gradient(to top right, #fffd76, #fffc00)
+  background: linear-gradient(to top right, #fffd76, #fffc00)
 
-.purple {
-  background: #6a3093;
-  background: -webkit-linear-gradient(to top right, #a044ff, #6a3093);
-  background: linear-gradient(to top right, #a044ff, #6a3093);
-}
+.purple
+  background: #6a3093
+  background: -webkit-linear-gradient(to top right, #a044ff, #6a3093)
+  background: linear-gradient(to top right, #a044ff, #6a3093)
 </style>
