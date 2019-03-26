@@ -2,6 +2,8 @@
 
 > Team Color Generator
 
+![EGbyZEi](https://user-images.githubusercontent.com/14079937/55016274-b476b500-4fee-11e9-9d16-4556c48a6e27.png)
+
 ## Build Setup
 
 ``` bash
