@@ -12,7 +12,7 @@ module.exports = {
   },
   loading: { color: '#232323' },
   manifest: {
-    theme_color: '#26a69a',
+    theme_color: '#232323',
     background_color: '#232323',
     name: 'Team Color Generator',
     short_name: 'TCG',
