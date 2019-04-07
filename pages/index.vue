@@ -131,11 +131,15 @@ body
 
 .title
   font-size: 5rem
-  color: #fefefe
-  text-shadow 0px 1px 0px #c0c0c0, 0px 2px 0px #b0b0b0, 0px 3px 0px #a0a0a0, 0px 4px 0px #909090, 0px 5px 10px rgba(0, 0, 0, 0.6)
+  text-shadow: 0 1px 0 #ccc, 0 2px 0 #c9c9c9, 0 3px 0 #bbb, 0 4px 0 #b9b9b9, 0 5px 0 #aaa, 0 6px 1px rgba(0,0,0,.1), 0 0 5px rgba(0,0,0,.1), 0 1px 3px rgba(0,0,0,.3), 0 3px 5px rgba(0,0,0,.2), 0 5px 10px rgba(0,0,0,.25), 0 10px 10px rgba(0,0,0,.2), 0 20px 20px rgba(0,0,0,.15)
 
 .subtitle
   font-size: 2em
+
+.title, .subtitle
+  cursor: default
+  user-select: none
+  font-weight: bold
 
 .links
   align-self: end
@@ -171,24 +175,22 @@ body
 .vs
   justify-self: center
   font-size: 3rem
+  cursor: default
+  user-select: none
 
 .red
   background: #cb2d3e
-  background: -webkit-linear-gradient(to top right, #ef473a, #cb2d3e)
-  background: linear-gradient(to top right, #ef473a, #cb2d3e)
+  background: linear-gradient(to top right, #f15750, #de0707)
 
 .blue
   background: #0575E6
-  background: -webkit-linear-gradient(to top right, rgb(0, 35, 161), #0575E6)
-  background: linear-gradient(to top right, rgb(0, 35, 161), #0575E6)
+  background: linear-gradient(to top right, #0575E6, #0023a1)
 
 .yellow
   background: #fffc00
-  background: -webkit-linear-gradient(to top right, #fffd76, #fffc00)
   background: linear-gradient(to top right, #fffd76, #fffc00)
 
 .purple
   background: #6a3093
-  background: -webkit-linear-gradient(to top right, #a044ff, #6a3093)
   background: linear-gradient(to top right, #a044ff, #6a3093)
 </style>
