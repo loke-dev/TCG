@@ -15,7 +15,8 @@ module.exports = {
     theme_color: '#26a69a',
     background_color: '#232323',
     name: 'Team Color Generator',
-    short_name: 'TCG'
+    short_name: 'TCG',
+    description: 'Generate team colors for PS4'
   },
   modules: [
     '@nuxtjs/pwa',
