@@ -1,74 +1,105 @@
 <template>
   <section class="container">
     <div class="header">
-      <h1 class="title">
-        TCG
-      </h1>
-      <p class="subtitle">
-        Team Color Generator
-      </p>
+      <h1 @click="animate" class="title">TCG</h1>
+      <p class="subtitle">Team Color Generator</p>
     </div>
     <div class="content">
-      <div class="colors-wrapper">
-        <div class="team1">
-          <div :class="colors[0].id" :key="colors[0].id" />
-          <div :class="colors[1].id" :key="colors[1].id" />
-        </div>
-        <span class="versus">vs</span>
-        <div class="team2">
-          <div :class="colors[2].id" :key="colors[2].id" />
-          <div :class="colors[3].id" :key="colors[3].id" />
-        </div>
-      </div>
+      <transition-group name="cell" class="colors-wrapper" tag="div">
+        <div class="team1 lt-1" :class="colors[0].id" :key="colors[0].id"/>
+        <div class="team1 lt-2" :class="colors[1].id" :key="colors[1].id"/>
+        <div class="vs lt-0" key="vs">vs</div>
+        <div class="team2 lt-3" :class="colors[2].id" :key="colors[2].id"/>
+        <div class="team2 lt-4" :class="colors[3].id" :key="colors[3].id"/>
+      </transition-group>
     </div>
     <div class="links">
       <a href="https://lokecarlsson.se" target="_blank" class="button--grey" rel="noopener">Author</a>
-      <a href="https://github.com/LokeCarlsson/TCG" target="_blank" class="button--grey" rel="noopener">GitHub</a>
+      <a
+        href="https://github.com/LokeCarlsson/TCG"
+        target="_blank"
+        class="button--grey"
+        rel="noopener"
+      >GitHub</a>
     </div>
   </section>
 </template>
 
 <script>
 export default {
-    data () {
-      return {
-        colors: [
-          {
-            name: 'Blue',
-            id: 'blue'
-          },
-          {
-            name: 'Red',
-            id: 'red'
-          },
-          {
-            name: 'Purple',
-            id: 'purple'
-          },
-          {
-            name: 'Yellow',
-            id: 'yellow'
-          }
-        ]
-      }
+  data() {
+    return {
+      colors: [
+        {
+          name: "Blue",
+          id: "blue"
+        },
+        {
+          name: "Red",
+          id: "red"
+        },
+        {
+          name: "Purple",
+          id: "purple"
+        },
+        {
+          name: "Yellow",
+          id: "yellow"
+        }
+      ]
+    };
+  },
+  async mounted() {
+    this.animate()
+  },
+  methods: {
+    sleep(milliseconds = 1000) {
+      return new Promise(resolve => setTimeout(resolve, milliseconds))
     },
-    mounted() {
+    async animate() {
+      this.shuffle()
+      await this.sleep(600)
+      this.shuffle()
+      await this.sleep(600)
       this.shuffle()
     },
-    methods: {
-      shuffle() {
-         this.colors
-          .map(a => [Math.random(), a])
-          .sort((a, b) => a[0] - b[0])
-          .forEach((e, i) => {
-            this.$set(this.colors, i, {name: e[1].name, id: e[1].id})
-          });
-      }
-    },
+    shuffle() {
+      this.colors
+        .map(a => [Math.random(), a])
+        .sort((a, b) => a[0] - b[0])
+        .forEach((e, i) => {
+          this.$set(this.colors, i, { name: e[1].name, id: e[1].id })
+        })
+    }
   }
+};
 </script>
 
 <style lang="sass">
+.colors-wrapper
+  display: grid
+  grid-template-columns: 1fr 1fr 1fr
+  grid-template-rows: 1fr 1fr
+  grid-template-areas: "lt-1  lt-0  lt-3 " "lt-2  lt-0  lt-4 "
+
+.lt-1
+  grid-area: lt-1
+
+.lt-2
+  grid-area: lt-2
+
+.lt-0
+  grid-area: lt-0
+
+.lt-3
+  grid-area: lt-3
+
+.lt-4
+  grid-area: lt-4
+
+.cell-move
+  transition: transform 0.75s
+
 body
   background-color: #232323
   color: white
@@ -101,18 +132,10 @@ body
 .title
   font-size: 5rem
   color: #fefefe
-  text-shadow
-  0px 1px 0px #c0c0c0,
-  0px 2px 0px #b0b0b0,
-  0px 3px 0px #a0a0a0,
-  0px 4px 0px #909090,
-  0px 5px 10px rgba(0, 0, 0, 0.6)
+  text-shadow 0px 1px 0px #c0c0c0, 0px 2px 0px #b0b0b0, 0px 3px 0px #a0a0a0, 0px 4px 0px #909090, 0px 5px 10px rgba(0, 0, 0, 0.6)
 
 .subtitle
   font-size: 2em
-
-.versus
-  font-size: 2.5rem
 
 .links
   align-self: end
@@ -136,14 +159,18 @@ body
   margin: auto
 
 .red, .blue, .yellow, .purple
-  height: 12rem;
-  width: 10rem;
-  margin: 3rem;
+  height: 12rem
+  width: 10rem
+  margin: 3rem
   border-radius: 0.5rem
   @media (max-width: 500px)
     height: 7rem
     width: 25vw
-    margin: 20px 10px;
+    margin: 20px 10px
+
+.vs
+  justify-self: center
+  font-size: 3rem
 
 .red
   background: #cb2d3e
