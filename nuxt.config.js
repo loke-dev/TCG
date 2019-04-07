@@ -10,9 +10,10 @@ module.exports = {
   server: {
     port: 8080
   },
-  loading: { color: '#3B8070' },
+  loading: { color: '#232323' },
   manifest: {
-    theme_color: '#3B8070'
+    theme_color: '#26a69a',
+    background_color: '#232323'
   },
   modules: [
     '@nuxtjs/pwa',
