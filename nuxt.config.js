@@ -23,5 +23,6 @@ module.exports = {
     ['@nuxtjs/google-analytics', {
       id: 'UA-72659574-7'
     }]
-  ]
+  ],
+  plugins: [{ src: '~/plugins/localStorage.js' }]
 }

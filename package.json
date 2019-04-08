@@ -12,20 +12,22 @@
     "precommit": "npm run lint"
   },
   "dependencies": {
-    "@nuxtjs/google-analytics": "^2.2.0",
+    "@nuxtjs/google-analytics": "latest",
     "@nuxtjs/pwa": "latest",
+    "cookie": "^0.3.1",
+    "js-cookie": "^2.2.0",
     "nuxt": "latest",
-    "vuex-persistedstate": "^2.5.4"
+    "vuex-persistedstate": "latest"
   },
   "devDependencies": {
-    "babel-eslint": "^7.1.1",
-    "eslint": "^3.15.0",
-    "eslint-config-standard": "^6.2.1",
-    "eslint-loader": "^1.6.1",
-    "eslint-plugin-html": "^2.0.0",
-    "eslint-plugin-promise": "^3.4.1",
-    "eslint-plugin-standard": "^2.0.1",
-    "node-sass": "^4.11.0",
-    "sass-loader": "^7.1.0"
+    "babel-eslint": "latest",
+    "eslint": "latest",
+    "eslint-config-standard": "latest",
+    "eslint-loader": "latest",
+    "eslint-plugin-html": "latest",
+    "eslint-plugin-promise": "latest",
+    "eslint-plugin-standard": "latest",
+    "node-sass": "latest",
+    "sass-loader": "latest"
   }
 }
