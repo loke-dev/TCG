@@ -1,4 +1,4 @@
-const getDefaultState = () => {
+const state = () => {
   return {
     colors: [
       {
@@ -20,8 +20,6 @@ const getDefaultState = () => {
     ]
   }
 }
-
-const state = getDefaultState()
 
 const actions = {
   shuffle ({ commit }) {
