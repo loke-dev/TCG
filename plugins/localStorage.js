@@ -1,14 +1,13 @@
 import createPersistedState from 'vuex-persistedstate'
 import * as Cookies from 'js-cookie'
-import cookie from 'cookie'
 
-export default ({store, req, isDev, isClient}) => {
+export default ({store}) => {
   createPersistedState({
     vuex: 'vuex',
     paths: ['colors'],
     storage: {
-      getItem: (key) => isClient ? Cookies.getJSON(key) : cookie.parse(req.headers.cookie || '')[key],
-      setItem: (key, value) => Cookies.set(key, value, { expires: 365, secure: !isDev }),
+      getItem: (key) => Cookies.getJSON(key),
+      setItem: (key, value) => Cookies.set(key, value, { expires: 365, secure: true }),
       removeItem: (key) => Cookies.remove(key)
     }
   })(store)
