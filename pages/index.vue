@@ -26,30 +26,18 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
 export default {
   data() {
     return {
-      colors: [
-        {
-          name: "Blue",
-          id: "blue"
-        },
-        {
-          name: "Red",
-          id: "red"
-        },
-        {
-          name: "Purple",
-          id: "purple"
-        },
-        {
-          name: "Yellow",
-          id: "yellow"
-        }
-      ]
+      
     };
   },
-  async mounted() {
+  computed: mapState([
+    'colors'
+  ]),
+  mounted() {
     this.animate()
   },
   methods: {
@@ -57,21 +45,13 @@ export default {
       return new Promise(resolve => setTimeout(resolve, milliseconds))
     },
     async animate() {
-      this.shuffle()
+      await this.$store.dispatch('shuffle')
       await this.sleep(600)
-      this.shuffle()
+      await this.$store.dispatch('shuffle')
       await this.sleep(600)
-      this.shuffle()
-    },
-    shuffle() {
-      this.colors
-        .map(a => [Math.random(), a])
-        .sort((a, b) => a[0] - b[0])
-        .forEach((e, i) => {
-          this.$set(this.colors, i, { name: e[1].name, id: e[1].id })
-        })
+      await this.$store.dispatch('shuffle')
     }
-  }
+  },
 };
 </script>
 
