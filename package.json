@@ -4,9 +4,10 @@
   "description": "Team Color Generator",
   "author": "LokeCarlsson <carlssonloke@gmail.com>",
   "scripts": {
-    "build": "gridsome build && npx workbox generateSW workbox-config.js",
+    "build": "gridsome build",
     "dev": "gridsome develop",
-    "explore": "gridsome explore"
+    "explore": "gridsome explore",
+    "post-build": "npx workbox generateSW workbox-config.js"
   },
   "dependencies": {
     "gridsome": "^0.5.0",
