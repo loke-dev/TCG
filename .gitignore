@@ -1,27 +1,8 @@
-# dependencies
-node_modules
-
-# logs
 *.log
-
-# Nuxt build
-.nuxt
-
-# Nuxt generate
+.cache
+.DS_Store
+src/.temp
+node_modules
 dist
-
-# Intellij idea
-.idea
-*iml
-
-# VSCode
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-
-# Generated files
-static/manifest*.json
-static/sw.js
-static/workbox-sw*.js
+.env
+.env.*

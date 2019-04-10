@@ -14,7 +14,7 @@
       </transition-group>
     </div>
     <div class="links">
-      <a href="https://lokecarlsson.se" target="_blank" class="button--grey" rel="noopener">Author</a>
+      <a href="https://loke.dev" target="_blank" class="button--grey" rel="noopener">Author</a>
       <a
         href="https://github.com/LokeCarlsson/TCG"
         target="_blank"
@@ -29,11 +29,6 @@
 import { mapState } from 'vuex';
 
 export default {
-  data() {
-    return {
-      
-    };
-  },
   computed: mapState([
     'colors'
   ]),
@@ -120,6 +115,7 @@ body
   cursor: default
   user-select: none
   font-weight: bold
+  margin: 10px;
 
 .links
   align-self: end
