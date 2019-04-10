@@ -7,7 +7,7 @@
     "build": "gridsome build",
     "dev": "gridsome develop",
     "explore": "gridsome explore",
-    "post-build": "npx workbox generateSW workbox-config.js"
+    "postbuild": "npx workbox generateSW workbox-config.js"
   },
   "dependencies": {
     "gridsome": "^0.5.0",
