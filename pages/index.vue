@@ -4,13 +4,13 @@
       <h1 @click="animate" class="title">TCG</h1>
       <p class="subtitle">Team Color Generator</p>
     </div>
-    <div v-if="colors" class="content">
+    <div class="content">
       <transition-group name="cell" class="colors-wrapper" tag="div">
-        <div class="team1 lt-1" :class="colors[0].id" :key="colors[0].id"/>
-        <div class="team1 lt-2" :class="colors[1].id" :key="colors[1].id"/>
+        <div v-if="colors[0]" class="team1 lt-1" :class="colors[0].id" :key="colors[0].id"/>
+        <div v-if="colors[1]" class="team1 lt-2" :class="colors[1].id" :key="colors[1].id"/>
         <div class="vs lt-0" key="vs">vs</div>
-        <div class="team2 lt-3" :class="colors[2].id" :key="colors[2].id"/>
-        <div class="team2 lt-4" :class="colors[3].id" :key="colors[3].id"/>
+        <div v-if="colors[2]" class="team2 lt-3" :class="colors[2].id" :key="colors[2].id"/>
+        <div v-if="colors[3]" class="team2 lt-4" :class="colors[3].id" :key="colors[3].id"/>
       </transition-group>
     </div>
     <div class="links">
