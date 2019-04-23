@@ -20,9 +20,9 @@ module.exports = {
   },
   modules: [
     '@nuxtjs/pwa',
+    'cookie-universal-nuxt',
     ['@nuxtjs/google-analytics', {
       id: 'UA-72659574-7'
     }]
   ],
-  plugins: [{ src: '~/plugins/localStorage.js' }]
 }

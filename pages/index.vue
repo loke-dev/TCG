@@ -4,7 +4,7 @@
       <h1 @click="animate" class="title">TCG</h1>
       <p class="subtitle">Team Color Generator</p>
     </div>
-    <div class="content">
+    <div v-if="colors" class="content">
       <transition-group name="cell" class="colors-wrapper" tag="div">
         <div class="team1 lt-1" :class="colors[0].id" :key="colors[0].id"/>
         <div class="team1 lt-2" :class="colors[1].id" :key="colors[1].id"/>
@@ -26,30 +26,68 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
-
 export default {
   data() {
     return {
-      
+      colors: this.getColors() || this.startColors,
+      startColors: [
+        {
+          name: 'Blue',
+          id: 'blue'
+        },
+        {
+          name: 'Red',
+          id: 'red'
+        },
+        {
+          name: 'Purple',
+          id: 'purple'
+        },
+        {
+          name: 'Yellow',
+          id: 'yellow'
+        }
+      ]
     };
   },
-  computed: mapState([
-    'colors'
-  ]),
-  mounted() {
-    this.animate()
+  async mounted() {
+    const cookieColors = this.getColors()
+    if (cookieColors) {
+      this.animate()
+    } else {
+      this.colors = await this.startColors
+      await this.sleep(200)
+      await this.shuffle()
+      this.animate()
+    }
   },
   methods: {
     sleep(milliseconds = 1000) {
       return new Promise(resolve => setTimeout(resolve, milliseconds))
     },
+    getColors() {
+      return this.$cookies.get("colors")
+    },
+    setColors(colors) {
+      this.$cookies.set("colors", colors, {
+        path: "/",
+        maxAge: 60 * 60 * 24 * 7
+      })
+    },
     async animate() {
-      await this.$store.dispatch('shuffle')
+      await this.shuffle()
       await this.sleep(600)
-      await this.$store.dispatch('shuffle')
+      await this.shuffle()
       await this.sleep(600)
-      await this.$store.dispatch('shuffle')
+      await this.shuffle()
+      this.setColors(this.colors)
+    },
+    shuffle() {
+      console.log('shuffle')
+      this.colors = this.colors
+        .map(a => [Math.random(), a])
+        .sort((a, b) => a[0] - b[0])
+        .map(a => a[1])
     }
   },
 };
