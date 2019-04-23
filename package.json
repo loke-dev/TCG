@@ -14,13 +14,8 @@
   "dependencies": {
     "@nuxtjs/google-analytics": "latest",
     "@nuxtjs/pwa": "latest",
-    "cookie": "^0.3.1",
-    "js-cookie": "^2.2.0",
-    "nuxt": "latest",
-    "vuex-persistedstate": "latest"
-  },
-  "devDependencies": {
     "babel-eslint": "latest",
+    "cookie-universal-nuxt": "^2.0.14",
     "eslint": "latest",
     "eslint-config-standard": "latest",
     "eslint-loader": "latest",
@@ -28,6 +23,7 @@
     "eslint-plugin-promise": "latest",
     "eslint-plugin-standard": "latest",
     "node-sass": "latest",
+    "nuxt": "latest",
     "sass-loader": "latest"
   }
 }
