@@ -46,8 +46,9 @@ export default {
         id: 'yellow'
       }
     ]
+    const cookieColors = await app.$cookies.get('colors')
     return {
-      colors: app.$cookies.get('colors') || startColors
+      colors: cookieColors || startColors
     };
   },
   data() {
