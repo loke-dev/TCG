@@ -6,15 +6,15 @@
     </div>
     <div class="content">
       <transition-group name="cell" class="colors-wrapper" tag="div">
-        <div v-if="colors[0]" class="team1 lt-1" :class="colors[0].id" :key="colors[0].id"/>
-        <div v-if="colors[1]" class="team1 lt-2" :class="colors[1].id" :key="colors[1].id"/>
+        <div class="team1 lt-1" :class="colors[0].id" :key="colors[0].id"/>
+        <div class="team1 lt-2" :class="colors[1].id" :key="colors[1].id"/>
         <div class="vs lt-0" key="vs">vs</div>
-        <div v-if="colors[2]" class="team2 lt-3" :class="colors[2].id" :key="colors[2].id"/>
-        <div v-if="colors[3]" class="team2 lt-4" :class="colors[3].id" :key="colors[3].id"/>
+        <div class="team2 lt-3" :class="colors[2].id" :key="colors[2].id"/>
+        <div class="team2 lt-4" :class="colors[3].id" :key="colors[3].id"/>
       </transition-group>
     </div>
     <div class="links">
-      <a href="https://lokecarlsson.se" target="_blank" class="button--grey" rel="noopener">Author</a>
+      <a href="https://loke.dev" target="_blank" class="button--grey" rel="noopener">Author</a>
       <a
         href="https://github.com/LokeCarlsson/TCG"
         target="_blank"
@@ -27,39 +27,36 @@
 
 <script>
 export default {
-  data() {
+  async asyncData({ req, res, app }) {
+    const startColors = [
+      {
+        name: 'Blue',
+        id: 'blue'
+      },
+      {
+        name: 'Red',
+        id: 'red'
+      },
+      {
+        name: 'Purple',
+        id: 'purple'
+      },
+      {
+        name: 'Yellow',
+        id: 'yellow'
+      }
+    ]
     return {
-      colors: this.getColors() || this.startColors,
-      startColors: [
-        {
-          name: 'Blue',
-          id: 'blue'
-        },
-        {
-          name: 'Red',
-          id: 'red'
-        },
-        {
-          name: 'Purple',
-          id: 'purple'
-        },
-        {
-          name: 'Yellow',
-          id: 'yellow'
-        }
-      ]
+      colors: app.$cookies.get('colors') || startColors
     };
   },
-  async mounted() {
-    const cookieColors = this.getColors()
-    if (cookieColors) {
-      this.animate()
-    } else {
-      this.colors = await this.startColors
-      await this.sleep(200)
-      await this.shuffle()
-      this.animate()
+  data() {
+    return {
+      colors: []
     }
+  },
+  mounted() {
+    this.animate()
   },
   methods: {
     sleep(milliseconds = 1000) {
@@ -75,6 +72,7 @@ export default {
       })
     },
     async animate() {
+      console.log('animate')
       await this.shuffle()
       await this.sleep(600)
       await this.shuffle()
