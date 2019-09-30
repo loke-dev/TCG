@@ -13,7 +13,7 @@ module.exports = {
           shortName: 'Gridsome',
           themeColor: '#cb2d3e',
           backgroundColor: '#232323',
-          icon: 'favicon.png'
+          icon: 'src/favicon.png'
       }
     }
   ]
