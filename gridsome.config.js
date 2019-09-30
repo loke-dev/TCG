@@ -4,7 +4,7 @@ module.exports = {
     {
       use: 'gridsome-plugin-pwa',
       options: {
-          title: 'Gridsome',
+          title: 'TCG',
           startUrl: '/',
           display: 'standalone',
           statusBarStyle: 'default',
