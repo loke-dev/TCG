@@ -14,8 +14,8 @@
   "dependencies": {
     "@nuxtjs/google-analytics": "latest",
     "@nuxtjs/pwa": "latest",
-    "cookie": "^0.3.1",
-    "js-cookie": "^2.2.0",
+    "cookie": "latest",
+    "js-cookie": "latest",
     "nuxt": "latest",
     "vuex-persistedstate": "latest"
   },
