@@ -24,5 +24,5 @@ module.exports = {
       id: 'UA-72659574-7'
     }]
   ],
-  plugins: [{ src: '~/plugins/localStorage.js' }]
+  plugins: [{ src: '~/plugins/localStorage.js', ssr: true }]
 }
