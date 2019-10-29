@@ -9,12 +9,22 @@
     "explore": "gridsome explore"
   },
   "dependencies": {
-    "gridsome": "^0.7.6",
-    "gridsome-plugin-pwa": "^0.0.8",
-    "js-cookie": "^2.2.1",
-    "node-sass": "^4.11.0",
-    "sass-loader": "^7.1.0",
-    "vuex": "^3.1.1",
-    "vuex-persistedstate": "^2.5.4"
+    "@nuxtjs/google-analytics": "latest",
+    "@nuxtjs/pwa": "latest",
+    "cookie": "latest",
+    "js-cookie": "latest",
+    "nuxt": "latest",
+    "vuex-persistedstate": "latest"
+  },
+  "devDependencies": {
+    "babel-eslint": "latest",
+    "eslint": "latest",
+    "eslint-config-standard": "latest",
+    "eslint-loader": "latest",
+    "eslint-plugin-html": "latest",
+    "eslint-plugin-promise": "latest",
+    "eslint-plugin-standard": "latest",
+    "node-sass": "latest",
+    "sass-loader": "latest"
   }
 }
