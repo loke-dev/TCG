@@ -1,7 +1,7 @@
 <template>
-  <section class="container">
+  <section @click="animate" class="container">
     <div class="header">
-      <h1 @click="animate" class="title">TCG</h1>
+      <h1 class="title">TCG</h1>
       <p class="subtitle">Team Color Generator</p>
     </div>
     <div class="content">
@@ -39,12 +39,16 @@ export default {
     sleep(milliseconds = 1000) {
       return new Promise(resolve => setTimeout(resolve, milliseconds))
     },
-    async animate() {
-      await this.$store.dispatch('shuffle')
-      await this.sleep(600)
-      await this.$store.dispatch('shuffle')
-      await this.sleep(600)
-      await this.$store.dispatch('shuffle')
+    async animate(event) {
+      if (event.target instanceof HTMLAnchorElement) {
+        return
+      } else {
+        await this.$store.dispatch('shuffle')
+        await this.sleep(600)
+        await this.$store.dispatch('shuffle')
+        await this.sleep(600)
+        await this.$store.dispatch('shuffle')
+      }
     }
   },
 };
