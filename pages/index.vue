@@ -3,6 +3,7 @@
     <div class="header">
       <h1 class="title">TCG</h1>
       <p class="subtitle">Team Color Generator</p>
+      <p class="notice">(Click anywhere to shuffle)</p>
     </div>
     <div class="content">
       <transition-group name="cell" class="colors-wrapper" tag="div">
@@ -115,7 +116,7 @@ body
 .subtitle
   font-size: 2em
 
-.title, .subtitle
+.title, .subtitle, .notice
   cursor: default
   user-select: none
   font-weight: bold
