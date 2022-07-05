@@ -14,7 +14,7 @@ export default defineNuxtConfig({
       short_name: 'TCG',
       description: 'Generate team colors for playstation games.',
       background_color: '#232323',
-      theme_color: '#cb2d3e',
+      theme_color: '#131313',
       lang: 'en',
       orientation: 'portrait',
       display: 'standalone',
