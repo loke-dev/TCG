@@ -27,6 +27,8 @@
 </template>
 
 <script setup>
+import splitbee from "@splitbee/web"
+
 const defaultColors = [
   { id: 'red', name: 'Team 1' },
   { id: 'yellow', name: 'Team 2' },
@@ -50,6 +52,13 @@ onMounted(() => {
     colors.value = JSON.parse(localStorage.colors)
   } else {
     colors.value = defaultColors
+  }
+
+  if (process.env.NODE_ENV === 'production') {
+    splitbee.init({
+      scriptUrl: "/bee.js",
+      apiUrl: "/_hive",
+    })
   }
 })
 
