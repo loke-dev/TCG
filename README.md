@@ -1,25 +1,37 @@
-# tcg
+[![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/lokecarlsson/TCG)
 
-> Team Color Generator
+# TCG - Team Color Generator
 
-[![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/lokecarlsson/TCG) 
 ![EGbyZEi](https://user-images.githubusercontent.com/14079937/55016464-1cc59680-4fef-11e9-8777-e4a600c91be5.png)
-## Build Setup
 
-``` bash
-# install dependencies
-$ npm install # Or yarn install
+## Setup
 
-# serve with hot reload at localhost:3000
-# service worker is disabled in dev
-$ npm run dev
+Make sure to install the dependencies:
 
-# build for production and launch server
-$ npm run build
-$ npm start
-
-# generate static project
-$ npm run generate
+```bash
+npm install
 ```
 
-For detailed explanation on how things work, checkout the [Nuxt.js docs](https://github.com/nuxt/nuxt.js).
+## Development Server
+
+Start the development server on http://localhost:3000
+
+```bash
+npm run dev
+```
+
+## Production
+
+Build the application for production:
+
+```bash
+npm run build
+```
+
+Locally preview production build:
+
+```bash
+npm run preview
+```
+
+Checkout the [deployment documentation](https://v3.nuxtjs.org/guide/deploy/presets) for more information.
