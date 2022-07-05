@@ -21,7 +21,7 @@
 
     <div class="links">
       <a href="https://loke.dev" target="_blank" class="button--grey" rel="noopener">Author</a>
-      <a href="https://github.com/LokeCarlsson/TCG" target="_blank" class="button--grey" rel="noopener">GitHub</a>
+      <a href="https://github.com/loke-dev/TCG" target="_blank" class="button--grey" rel="noopener">GitHub</a>
     </div>
   </section>
 </template>
