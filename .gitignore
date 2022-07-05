@@ -1,9 +1,10 @@
-*.log
-.cache
-.DS_Store
-src/.temp
 node_modules
-dist
-.env
-.env.*
+*.log*
 .nuxt
+.nitro
+.cache
+.output
+.env
+dist
+sw.*
+.DS_Store
