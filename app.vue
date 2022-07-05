@@ -20,8 +20,8 @@
     </div>
 
     <div class="links">
-      <a href="https://loke.dev" target="_blank" class="button--grey" rel="noopener">Author</a>
-      <a href="https://github.com/loke-dev/TCG" target="_blank" class="button--grey" rel="noopener">GitHub</a>
+      <a href="https://loke.dev" target="_blank" class="button--grey" rel="noopener" data-splitbee-event="External Link" data-splitbee-event-destination="loke.dev">Author</a>
+      <a href="https://github.com/loke-dev/TCG" target="_blank" class="button--grey" rel="noopener" data-splitbee-event="External Link" data-splitbee-event-destination="Github">GitHub</a>
     </div>
   </section>
 </template>
@@ -68,6 +68,8 @@ watch(colors, async (newColors) => {
 
 
 async function animate() {
+  splitbee.track('click')
+
   await shuffle()
   await sleep(600)
   await shuffle()
