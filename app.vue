@@ -51,8 +51,6 @@ onMounted(() => {
   } else {
     colors.value = defaultColors
   }
-
-  animate()
 })
 
 watch(colors, async (newColors) => {
@@ -61,7 +59,6 @@ watch(colors, async (newColors) => {
 
 
 async function animate() {
-  await sleep(100)
   await shuffle()
   await sleep(600)
   await shuffle()
