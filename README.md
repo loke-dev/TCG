@@ -1,5 +1,3 @@
-[![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/lokecarlsson/TCG)
-
 # TCG - Team Color Generator
 
 ![EGbyZEi](https://user-images.githubusercontent.com/14079937/55016464-1cc59680-4fef-11e9-8777-e4a600c91be5.png)
