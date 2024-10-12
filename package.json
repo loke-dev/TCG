@@ -6,10 +6,7 @@
     "preview": "nuxt preview"
   },
   "devDependencies": {
-    "@kevinmarrec/nuxt-pwa": "^0.3.1",
-    "nuxt": "3.0.0-rc.4"
-  },
-  "dependencies": {
-    "@splitbee/web": "^0.3.0"
+    "@vite-pwa/nuxt": "^0.10.5",
+    "nuxt": "^3.13.2"
   }
 }

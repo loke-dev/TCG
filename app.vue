@@ -3,8 +3,8 @@
     <Title>Team Color Generator</Title>
     <Meta name="description" content="Generate team colors for playstation games."/>
   </Head>
-  <section class="container">
-    <div @click="animate" class="content">
+  <section @click="animate" class="container">
+    <div class="content">
       <transition-group v-if="colors.length > 0" name="cell" class="colors-wrapper" tag="div">
         <div class="team1 lt-1" :class="colors[0].id" :key="colors[0].id" />
         <div class="team1 lt-2" :class="colors[1].id" :key="colors[1].id" />
@@ -20,15 +20,13 @@
     </div>
 
     <div class="links">
-      <a href="https://loke.dev" target="_blank" class="button--grey" rel="noopener" data-splitbee-event="External Link" data-splitbee-event-destination="loke.dev">Author</a>
-      <a href="https://github.com/loke-dev/TCG" target="_blank" class="button--grey" rel="noopener" data-splitbee-event="External Link" data-splitbee-event-destination="Github">GitHub</a>
+      <a href="https://loke.dev" target="_blank" class="button--grey" rel="noopener">Author</a>
+      <a href="https://github.com/loke-dev/TCG" target="_blank" class="button--grey" rel="noopener">GitHub</a>
     </div>
   </section>
 </template>
 
 <script setup>
-import splitbee from "@splitbee/web"
-
 const defaultColors = [
   { id: 'red', name: 'Team 1' },
   { id: 'yellow', name: 'Team 2' },
@@ -54,13 +52,6 @@ onMounted(() => {
     colors.value = defaultColors
   }
 
-  if (process.env.NODE_ENV === 'production') {
-    splitbee.init({
-      scriptUrl: "/bee.js",
-      apiUrl: "/_hive",
-    })
-  }
-
   animate()
 })
 
@@ -70,8 +61,6 @@ watch(colors, async (newColors) => {
 
 
 async function animate() {
-  splitbee.track('click')
-
   await sleep(100)
   await shuffle()
   await sleep(600)
