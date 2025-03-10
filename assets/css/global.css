@@ -1,0 +1,125 @@
+/* Google Fonts Import */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Exo+2:wght@300;400;500;600;700&display=swap');
+
+/* Base styles */
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #0a0a0a;
+  color: #fff;
+  font-family: 'Exo 2', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Text styling */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Orbitron', sans-serif;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-top: 0;
+}
+
+h1 {
+  font-weight: 700;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  background: linear-gradient(to right, #fff, #a0a0a0);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-glow {
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+}
+
+.text-gradient {
+  background: linear-gradient(to right, #64b5f6, #e91e63);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-cyber {
+  position: relative;
+  font-family: 'Orbitron', sans-serif;
+  letter-spacing: 2px;
+  overflow: hidden;
+}
+
+.text-cyber::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 2px;
+  text-shadow: -1px 0 #00ffff;
+  top: 0;
+  color: transparent;
+  overflow: hidden;
+  animation: glitch-effect 3s infinite linear alternate-reverse;
+}
+
+@keyframes glitch-effect {
+
+  0%,
+  95%,
+  100% {
+    clip-path: inset(0 0 0 0);
+  }
+
+  10% {
+    clip-path: inset(0 0 50% 0);
+  }
+
+  15% {
+    clip-path: inset(50% 0 0 0);
+  }
+}
+
+.app-background {
+  position: relative;
+  min-height: 100vh;
+  background: radial-gradient(ellipse at top, #1a1a2e 0%, #0a0a0a 70%);
+  overflow: hidden;
+  will-change: contents;
+  width: 100%;
+}
+
+.container {
+  position: relative;
+  display: grid;
+  min-height: 100vh;
+  z-index: 2;
+  grid-template-rows: 1fr auto auto;
+  will-change: contents;
+  width: 100%;
+}
+
+/* Glass morphism */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(15px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 375px) {
+  .glass-panel {
+    border-radius: 15px;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  h2,
+  h3 {
+    font-size: 1.2rem;
+  }
+}
