@@ -3,13 +3,11 @@
     "build": "nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
-    "preview": "nuxt preview"
+    "preview": "nuxt preview",
+    "postinstall": "npx nuxi prepare"
   },
   "devDependencies": {
     "@vite-pwa/nuxt": "^0.10.5",
     "nuxt": "^3.13.2"
-  },
-  "overrides": {
-    "rollup": "npm:@rollup/wasm-node"
   }
 }

@@ -1,16 +1,5 @@
 {
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/node",
-      "config": {
-        "installCommand": "npm install --force"
-      }
-    }
-  ],
-  "build": {
-    "env": {
-      "NPM_FLAGS": "--force"
-    }
-  }
+  "buildCommand": "npm run build",
+  "installCommand": "npm install --no-optional",
+  "framework": "nuxt"
 }

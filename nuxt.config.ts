@@ -15,4 +15,15 @@ export default defineNuxtConfig({
       start_url: "/",
     },
   },
+  vite: {
+    build: {
+      rollupOptions: {
+        // Force using the browser/WASM version of Rollup
+        context: "globalThis",
+      },
+    },
+  },
+  nitro: {
+    preset: "vercel",
+  },
 });
