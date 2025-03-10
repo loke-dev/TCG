@@ -68,7 +68,6 @@
   font-size: 1.5rem;
   font-weight: 700;
   margin: 0;
-  padding: 0.5rem 1.5rem;
   letter-spacing: 1px;
   text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
   transform: translateY(0);

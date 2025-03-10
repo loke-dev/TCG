@@ -37,8 +37,10 @@ class Particle {
 
     // Physics properties
     this.mass = this.size * 0.5; // Mass based on size
-    this.friction = 0.995; // Very slight friction to gradually slow down
-    this.minSpeed = 0.05; // Minimum speed to maintain some movement
+    this.friction = 0.997; // Reduced friction to maintain movement longer
+    this.minSpeed = 0.1; // Moderate minimum speed
+    this.directionChangeTimer = 0; // Timer for gradual direction changes
+    this.directionChangePeriod = Math.random() * 200 + 100; // Random period for direction changes
 
     // Visual properties
     this.alpha = 0.7;
@@ -51,17 +53,37 @@ class Particle {
   }
 
   update() {
-    // Apply friction to gradually slow down
+    // Apply very slight friction to gradually slow down
     this.speedX *= this.friction;
     this.speedY *= this.friction;
 
     // Ensure particles never completely stop moving
     const currentSpeed = Math.sqrt(this.speedX * this.speedX + this.speedY * this.speedY);
-    if (currentSpeed < this.minSpeed && !this.isActive) {
-      // Add small random movement to maintain minimum speed
-      const angle = Math.random() * Math.PI * 2;
-      this.speedX = Math.cos(angle) * this.minSpeed;
-      this.speedY = Math.sin(angle) * this.minSpeed;
+
+    // For resting mode, create gentle flowing movement
+    if (!this.isActive) {
+      // Increment direction change timer
+      this.directionChangeTimer++;
+
+      // Gradually change direction over time for a flowing effect
+      if (this.directionChangeTimer >= this.directionChangePeriod) {
+        // Reset timer and set new change period
+        this.directionChangeTimer = 0;
+        this.directionChangePeriod = Math.random() * 200 + 100;
+
+        // Apply a gentle nudge in a new direction
+        const angle = Math.random() * Math.PI * 2;
+        const nudgeStrength = 0.02;
+        this.speedX += Math.cos(angle) * nudgeStrength;
+        this.speedY += Math.sin(angle) * nudgeStrength;
+      }
+
+      // If speed falls too low, gently increase it
+      if (currentSpeed < this.minSpeed) {
+        const speedRatio = this.minSpeed / currentSpeed;
+        this.speedX *= speedRatio;
+        this.speedY *= speedRatio;
+      }
     }
 
     // Update position
@@ -114,8 +136,11 @@ class Particle {
   }
 
   draw() {
+    // Determine if this is a special "glow" particle
+    const isGlowParticle = this.color.includes('255, 255, 255');
+
     // Draw glow effect
-    const glow = this.size * 2;
+    const glow = this.size * (isGlowParticle ? 3 : 2);
     const gradient = this.ctx.createRadialGradient(
       this.x, this.y, 0,
       this.x, this.y, glow
@@ -123,8 +148,12 @@ class Particle {
 
     // Extract base color for glow
     const baseColor = this.color.replace(/[^,]+(?=\))/, '0.1');
+    const innerColor = isGlowParticle ?
+      this.color.replace(/[^,]+(?=\))/, '0.7') :
+      this.color;
 
-    gradient.addColorStop(0, this.color);
+    gradient.addColorStop(0, innerColor);
+    gradient.addColorStop(0.6, this.color);
     gradient.addColorStop(1, baseColor);
 
     this.ctx.globalAlpha = this.alpha;
@@ -133,12 +162,14 @@ class Particle {
     this.ctx.arc(this.x, this.y, glow, 0, Math.PI * 2);
     this.ctx.fill();
 
-    // Draw main particle
-    this.ctx.globalAlpha = this.alpha;
-    this.ctx.fillStyle = this.color;
-    this.ctx.beginPath();
-    this.ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-    this.ctx.fill();
+    // Draw main particle (except for glow particles which are just glow)
+    if (!isGlowParticle) {
+      this.ctx.globalAlpha = this.alpha;
+      this.ctx.fillStyle = this.color;
+      this.ctx.beginPath();
+      this.ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      this.ctx.fill();
+    }
   }
 
   fadeOut() {
@@ -263,33 +294,58 @@ function createParticles(ctx, width, height) {
   // Clear existing particles
   particles = [];
 
-  // Colors for particles
+  // Colors for particles with more variation and opacity differences
   const colors = [
-    'rgba(241, 87, 80, 0.7)',  // Red
+    'rgba(241, 87, 80, 0.7)',   // Red
+    'rgba(241, 87, 80, 0.5)',   // Light red
     'rgba(255, 253, 118, 0.7)', // Yellow
+    'rgba(255, 253, 118, 0.5)', // Light yellow
     'rgba(5, 117, 230, 0.7)',   // Blue
-    'rgba(160, 68, 255, 0.7)'   // Purple
+    'rgba(5, 117, 230, 0.5)',   // Light blue
+    'rgba(160, 68, 255, 0.7)',  // Purple
+    'rgba(160, 68, 255, 0.5)',  // Light purple
+    'rgba(255, 255, 255, 0.4)', // White glow
   ];
 
   // Create particles distributed across the canvas
   const padding = 50; // Keep particles away from edges
 
-  for (let i = 0; i < 150; i++) {
-    // Random position with padding from edges
-    const x = padding + Math.random() * (width - padding * 2);
-    const y = padding + Math.random() * (height - padding * 2);
+  // Create a wider range of particle sizes
+  const particleSizes = {
+    tiny: { min: 1, max: 2, count: 50 },
+    small: { min: 2, max: 3.5, count: 60 },
+    medium: { min: 3.5, max: 5, count: 30 },
+    large: { min: 5, max: 7, count: 10 }
+  };
 
-    const size = Math.random() * 3 + 2; // Slightly smaller particles
-    const color = colors[Math.floor(Math.random() * colors.length)];
+  // Create particles of different size categories
+  Object.values(particleSizes).forEach(sizeCategory => {
+    for (let i = 0; i < sizeCategory.count; i++) {
+      // Random position with padding from edges
+      const x = padding + Math.random() * (width - padding * 2);
+      const y = padding + Math.random() * (height - padding * 2);
 
-    // Create particle
-    const particle = new Particle(x, y, size, color, ctx, width, height);
+      const size = sizeCategory.min + Math.random() * (sizeCategory.max - sizeCategory.min);
+      const color = colors[Math.floor(Math.random() * colors.length)];
 
-    // Give it a small initial velocity
-    particle.setRandomVelocity(0.1, 0.3);
+      // Create particle
+      const particle = new Particle(x, y, size, color, ctx, width, height);
 
-    particles.push(particle);
-  }
+      // Vary initial velocity based on size (smaller particles move faster)
+      const speedFactor = 1.2 - (size / 7); // Smaller particles get higher speed factor
+      particle.setRandomVelocity(0.05 * speedFactor, 0.25 * speedFactor);
+
+      // Vary friction slightly for each particle
+      particle.friction = 0.995 + (Math.random() * 0.004); // Between 0.995 and 0.999
+
+      // Vary alpha based on size
+      const baseAlpha = 0.5 + (Math.random() * 0.3); // Between 0.5 and 0.8
+      particle.alpha = baseAlpha;
+      particle.targetAlpha = baseAlpha;
+
+      particles.push(particle);
+    }
+  });
 }
 
 function animate(ctx, width, height) {
