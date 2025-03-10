@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npm run build",
-  "installCommand": "npm install --no-optional",
+  "buildCommand": "node vercel-build.js",
+  "installCommand": "npm install",
   "framework": "nuxtjs"
 }
