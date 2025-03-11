@@ -1,17 +1,16 @@
 {
   "scripts": {
-    "build": "ROLLUP_WASM=true nuxt build",
+    "build": "nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "ROLLUP_WASM=true npx nuxi prepare"
+    "postinstall": "npx nuxi prepare"
   },
   "devDependencies": {
     "@vite-pwa/nuxt": "^0.10.5",
-    "nuxt": "^3.13.2",
-    "@rollup/wasm-node": "^4.13.0"
+    "nuxt": "^3.13.2"
   },
-  "resolutions": {
-    "rollup": "npm:@rollup/wasm-node"
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "*"
   }
 }

@@ -1,5 +1,0 @@
-{
-  "buildCommand": "node vercel-build.js",
-  "installCommand": "npm install",
-  "framework": "nuxtjs"
-}
