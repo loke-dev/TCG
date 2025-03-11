@@ -5,17 +5,17 @@
       :key="color.id"
       :color="color"
       :is-shuffling="isShuffling"
-      :team-class="`team1 lt-${index + 1}`"
+      :team-class="`team1 team-card-${index + 1}`"
     />
 
-    <VersusElement key="vs" class="lt-0" />
+    <VersusElement key="vs" class="versus-element" />
 
     <ColorCard
       v-for="(color, index) in [displayColors[2], displayColors[3]]"
       :key="color.id"
       :color="color"
       :is-shuffling="isShuffling"
-      :team-class="`team2 lt-${index + 3}`"
+      :team-class="`team2 team-card-${index + 3}`"
     />
   </transition-group>
 </template>
@@ -56,31 +56,41 @@ watch(() => props.isShuffling, (newVal) => {
 /* Card grid layout */
 .colors-wrapper {
   display: grid;
-  grid-template-columns: 2fr 1fr 2fr;
-  grid-template-rows: 1fr 1fr;
-  grid-template-areas: "lt-1 lt-0 lt-3" "lt-2 lt-0 lt-4";
-  padding: 20px;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  z-index: 2;
-  gap: 1rem;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-areas:
+    "team1-1 team1-1 versus team2-1 team2-1"
+    "team1-2 team1-2 versus team2-2 team2-2";
   width: 100%;
   max-width: 900px;
+  gap: 2rem 1.5rem;
+  align-items: center;
+  justify-items: center;
+  position: relative;
+  z-index: 2;
   margin: 0 auto;
+  align-self: center;
+  justify-self: center;
+  padding: 1rem;
 }
 
-.lt-1 { grid-area: lt-1; justify-self: end; }
-.lt-2 { grid-area: lt-2; justify-self: end; }
-.lt-0 { grid-area: lt-0; justify-self: center; }
-.lt-3 { grid-area: lt-3; justify-self: start; }
-.lt-4 { grid-area: lt-4; justify-self: start; }
+.team-card-1 {
+  grid-area: team1-1;
+}
 
-@media (min-width: 800px) {
-  .colors-wrapper {
-    column-gap: 10%;
-    row-gap: 2rem;
-  }
+.team-card-2 {
+  grid-area: team1-2;
+}
+
+.versus-element {
+  grid-area: versus;
+}
+
+.team-card-3 {
+  grid-area: team2-1;
+}
+
+.team-card-4 {
+  grid-area: team2-2;
 }
 
 /* Improved shuffle animation */
@@ -100,25 +110,31 @@ watch(() => props.isShuffling, (newVal) => {
 }
 
 /* Responsive styles */
+@media (max-width: 1200px) {
+  .colors-wrapper {
+    gap: 1.5rem 1.25rem;
+    padding: 0.75rem;
+  }
+}
+
 @media (max-width: 768px) {
   .colors-wrapper {
-    gap: 0.8rem;
-    padding: 15px;
+    gap: 0.75rem;
+    padding: 0.5rem;
   }
 }
 
 @media (max-width: 500px) {
   .colors-wrapper {
-    gap: 0.7rem;
-    padding: 10px;
-    margin: 0.5rem;
+    gap: 0.5rem;
+    padding: 0.25rem;
   }
 }
 
 @media (max-width: 375px) {
   .colors-wrapper {
-    gap: 0.5rem;
-    padding: 8px;
+    gap: 0.25rem;
+    padding: 0.25rem;
   }
 }
 </style>

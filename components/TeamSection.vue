@@ -1,12 +1,8 @@
 <template>
   <div class="team-section-wrapper">
-    <div class="team-section team1-section">
-      <h2 class="team-title">Team 1</h2>
-    </div>
+    <h2 class="team-title team1-title">Team 1</h2>
     <div class="divider-line"></div>
-    <div class="team-section team2-section">
-      <h2 class="team-title">Team 2</h2>
-    </div>
+    <h2 class="team-title team2-title">Team 2</h2>
   </div>
 </template>
 
@@ -17,68 +13,42 @@
 <style scoped>
 /* Team sections */
 .team-section-wrapper {
-  position: absolute;
-  top: 0;
-  left: 0;
   width: 100%;
-  height: 80%;
-  display: flex;
-  pointer-events: none;
+  height: 4rem;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
   z-index: 1;
-}
-
-.team-section {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  padding-top: 0.5rem;
-  position: relative;
-  overflow: hidden;
-}
-
-.team-section::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  z-index: -1;
-  border-radius: 20px;
-}
-
-.divider-line {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  width: 2px;
-  height: 100%;
-  background: linear-gradient(to bottom,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.3) 20%,
-    rgba(255, 255, 255, 0.3) 80%,
-    rgba(255, 255, 255, 0) 100%);
-  transform: translateX(-50%);
-  z-index: 2;
-  pointer-events: none;
+  padding: 0 1rem;
 }
 
 .team-title {
-  font-size: 1.3rem;
+  font-size: 1.5rem;
   font-weight: 700;
   margin: 0;
   letter-spacing: 1px;
   text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
-  transform: translateY(0);
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
-  background: linear-gradient(90deg, #ffffff, #a0a0a0);
-  -webkit-background-clip: text;
   background-clip: text;
+  -webkit-background-clip: text;
   color: transparent;
   border-bottom: 2px solid transparent;
+}
+
+.team1-title {
+  background: linear-gradient(90deg, #ffffff, #c0c0c0);
+  -webkit-background-clip: text;
+  background-clip: text;
+  justify-self: center;
+}
+
+.team2-title {
+  background: linear-gradient(90deg, #c0c0c0, #ffffff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  justify-self: center;
 }
 
 .team-title::before {
@@ -102,39 +72,59 @@
   left: 100%;
 }
 
-.team1-section .team-title {
-  background: linear-gradient(90deg, #ffffff, #c0c0c0);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-.team2-section .team-title {
-  background: linear-gradient(90deg, #c0c0c0, #ffffff);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+.divider-line {
+  width: 2px;
+  height: 100%;
+  background: linear-gradient(to bottom,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.3) 20%,
+    rgba(255, 255, 255, 0.3) 80%,
+    rgba(255, 255, 255, 0) 100%);
+  justify-self: center;
+  z-index: 2;
 }
 
 /* Responsive styles */
-@media (max-width: 768px) {
+@media (max-width: 1200px) {
+  .team-section-wrapper {
+    height: 3.5rem;
+  }
+
   .team-title {
-    font-size: 1.1rem;
-    padding: 0.3rem 0.8rem;
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .team-section-wrapper {
+    height: 2.5rem;
+    padding: 0 0.5rem;
+  }
+
+  .team-title {
+    font-size: 1rem;
   }
 }
 
 @media (max-width: 500px) {
+  .team-section-wrapper {
+    height: 2rem;
+    padding: 0 0.25rem;
+  }
+
   .team-title {
     font-size: 0.9rem;
-    padding: 0.2rem 0.6rem;
   }
 }
 
 @media (max-width: 375px) {
+  .team-section-wrapper {
+    height: 1.75rem;
+    padding: 0 0.25rem;
+  }
+
   .team-title {
     font-size: 0.8rem;
-    padding: 0.2rem 0.5rem;
   }
 }
 </style>
