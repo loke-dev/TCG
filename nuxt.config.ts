@@ -2,7 +2,9 @@ export default defineNuxtConfig({
   typescript: {
     shim: false,
   },
+
   modules: ["@vite-pwa/nuxt"],
+
   pwa: {
     manifest: {
       name: "Team Color Generator",
@@ -15,6 +17,7 @@ export default defineNuxtConfig({
       start_url: "/",
     },
   },
+
   vite: {
     build: {
       rollupOptions: {
@@ -23,7 +26,10 @@ export default defineNuxtConfig({
       },
     },
   },
+
   nitro: {
     preset: "vercel",
   },
+
+  compatibilityDate: "2025-03-11",
 });

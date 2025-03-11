@@ -13,8 +13,8 @@
 <style scoped>
 .header {
   box-sizing: border-box;
-  padding: 2rem;
-  margin: 1rem auto;
+  padding: 1rem 2rem;
+  margin: 0.5rem auto;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -25,9 +25,10 @@
 
 /* Title styles */
 .title {
-  font-size: 5rem;
+  font-size: 4rem;
   font-weight: 900;
   margin: 0;
+  line-height: 1;
   background: linear-gradient(to right, #f15750, #fffd76, #0575e6, #a044ff);
   background-size: 300% 300%;
   -webkit-background-clip: text;
@@ -54,10 +55,10 @@
 .title::after {
   content: '';
   position: absolute;
-  bottom: -5px;
+  bottom: -3px;
   left: 0;
   width: 100%;
-  height: 3px;
+  height: 2px;
   background: linear-gradient(to right, #f15750, #fffd76, #0575e6, #a044ff);
   background-size: 300% 300%;
   border-radius: 3px;
@@ -65,8 +66,8 @@
 }
 
 .subtitle {
-  font-size: 2em;
-  margin-top: 0.5rem;
+  font-size: 1.5rem;
+  margin-top: 0.3rem;
   font-weight: 600;
   letter-spacing: 1px;
   background: linear-gradient(to right, #f15750, #fffd76, #0575e6, #a044ff);
@@ -82,7 +83,7 @@
 .subtitle::after {
   content: '';
   position: absolute;
-  bottom: -3px;
+  bottom: -2px;
   left: 0;
   width: 100%;
   height: 1px;
@@ -95,9 +96,9 @@
 }
 
 .notice {
-  font-size: 1rem;
+  font-size: 0.9rem;
   opacity: 0.8;
-  margin-top: 0.5rem;
+  margin-top: 0.3rem;
   font-family: 'Exo 2', sans-serif;
   letter-spacing: 0.5px;
 }
@@ -110,35 +111,25 @@
 /* Responsive styles */
 @media (max-width: 1000px) {
   .header {
-    margin: 1rem;
+    margin: 0.5rem;
   }
 }
 
 @media (max-width: 768px) {
   .title {
-    font-size: 4rem;
+    font-size: 3.5rem;
   }
 
   .subtitle {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
+  }
+
+  .header {
+    padding: 0.8rem 1.5rem;
   }
 }
 
 @media (max-width: 500px) {
-  .title {
-    font-size: 3rem;
-  }
-
-  .subtitle {
-    font-size: 1.2rem;
-  }
-
-  .header {
-    padding: 1.5rem;
-  }
-}
-
-@media (max-width: 375px) {
   .title {
     font-size: 2.5rem;
   }
@@ -147,8 +138,26 @@
     font-size: 1rem;
   }
 
+  .header {
+    padding: 0.7rem 1.2rem;
+  }
+}
+
+@media (max-width: 375px) {
+  .title {
+    font-size: 2rem;
+  }
+
+  .subtitle {
+    font-size: 0.9rem;
+  }
+
   .notice {
-    font-size: 0.8rem;
+    font-size: 0.7rem;
+  }
+
+  .header {
+    padding: 0.6rem 1rem;
   }
 }
 </style>

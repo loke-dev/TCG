@@ -21,7 +21,7 @@
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
+  height: 80%;
   display: flex;
   pointer-events: none;
   z-index: 1;
@@ -31,7 +31,7 @@
   flex: 1;
   display: flex;
   justify-content: center;
-  padding-top: 1rem;
+  padding-top: 0.5rem;
   position: relative;
   overflow: hidden;
 }
@@ -65,7 +65,7 @@
 }
 
 .team-title {
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   font-weight: 700;
   margin: 0;
   letter-spacing: 1px;
@@ -93,7 +93,7 @@
 }
 
 .team-title:hover {
-  transform: translateY(-3px);
+  transform: translateY(-2px);
   text-shadow: 0 0 12px rgba(255, 255, 255, 0.8);
   border-bottom: 2px solid rgba(255, 255, 255, 0.5);
 }
@@ -119,22 +119,22 @@
 /* Responsive styles */
 @media (max-width: 768px) {
   .team-title {
-    font-size: 1.2rem;
-    padding: 0.4rem 1rem;
+    font-size: 1.1rem;
+    padding: 0.3rem 0.8rem;
   }
 }
 
 @media (max-width: 500px) {
   .team-title {
-    font-size: 1rem;
-    padding: 0.3rem 0.8rem;
+    font-size: 0.9rem;
+    padding: 0.2rem 0.6rem;
   }
 }
 
 @media (max-width: 375px) {
   .team-title {
-    font-size: 0.9rem;
-    padding: 0.3rem 0.7rem;
+    font-size: 0.8rem;
+    padding: 0.2rem 0.5rem;
   }
 }
 </style>

@@ -6,8 +6,8 @@
   <div class="app-background">
     <BackgroundEffects ref="backgroundEffects" />
     <section @click="handleClick" class="container">
-      <MainContent :colors="colors" :is-shuffling="isShuffling" />
       <AppHeader />
+      <MainContent :colors="colors" :is-shuffling="isShuffling" />
       <AppFooter />
     </section>
   </div>

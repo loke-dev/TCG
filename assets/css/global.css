@@ -1,5 +1,5 @@
 /* Google Fonts Import */
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Exo+2:wght@300;400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Exo+2:wght@300;400;500;600;700&display=swap");
 
 /* Base styles */
 body {
@@ -7,7 +7,7 @@ body {
   padding: 0;
   background-color: #0a0a0a;
   color: #fff;
-  font-family: 'Exo 2', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Exo 2", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -20,7 +20,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: 'Orbitron', sans-serif;
+  font-family: "Orbitron", sans-serif;
   letter-spacing: 1px;
   text-transform: uppercase;
   margin-top: 0;
@@ -48,7 +48,7 @@ h1 {
 
 .text-cyber {
   position: relative;
-  font-family: 'Orbitron', sans-serif;
+  font-family: "Orbitron", sans-serif;
   letter-spacing: 2px;
   overflow: hidden;
 }
@@ -65,7 +65,6 @@ h1 {
 }
 
 @keyframes glitch-effect {
-
   0%,
   95%,
   100% {
@@ -98,6 +97,9 @@ h1 {
   grid-template-rows: 1fr auto auto;
   will-change: contents;
   width: 100%;
+  flex-direction: column;
+  justify-content: space-between;
+  display: flex;
 }
 
 /* Glass morphism */
