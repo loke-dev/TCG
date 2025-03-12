@@ -1,7 +1,5 @@
-/* Google Fonts Import */
 @import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Exo+2:wght@300;400;500;600;700&display=swap");
 
-/* Base styles */
 body {
   margin: 0;
   padding: 0;
@@ -13,7 +11,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Text styling */
 h1,
 h2,
 h3,
@@ -89,7 +86,6 @@ h1 {
   width: 100%;
 }
 
-/* Glass morphism */
 .glass-panel {
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(15px);
@@ -98,7 +94,6 @@ h1 {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
-/* Spacing system */
 :root {
   --space-xs: 0.25rem;
   --space-sm: 0.5rem;
@@ -108,7 +103,6 @@ h1 {
   --space-xxl: 2.5rem;
 }
 
-/* Responsive styles */
 @media (max-width: 1200px) {
   :root {
     --space-xs: 0.2rem;

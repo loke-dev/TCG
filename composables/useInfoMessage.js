@@ -7,18 +7,15 @@ export function useInfoMessage() {
   const progress = ref(100);
   let infoMessageTimer = null;
   let progressInterval = null;
-  let remainingTime = 10000; // 10 seconds
+  let remainingTime = 10000;
   let lastUpdateTime = null;
-  const TOTAL_DISPLAY_TIME = 10000; // 10 seconds
+  const TOTAL_DISPLAY_TIME = 10000;
 
-  // Check if user has seen the info message before
   onMounted(() => {
-    // Check localStorage for user preference
     if (localStorage.getItem('hasSeenInfoMessage') === 'true') {
       hasSeenInfoMessage.value = true;
     }
 
-    // Set up timer to show info message after 15 seconds if user hasn't interacted
     if (!hasSeenInfoMessage.value) {
       infoMessageTimer = setTimeout(() => {
         if (!hasInteracted.value) {
@@ -29,7 +26,6 @@ export function useInfoMessage() {
     }
   });
 
-  // Clean up timers on component unmount
   onUnmounted(() => {
     if (infoMessageTimer) {
       clearTimeout(infoMessageTimer);
@@ -37,7 +33,6 @@ export function useInfoMessage() {
     stopProgressBar();
   });
 
-  // Start the progress bar countdown
   function startProgressBar() {
     remainingTime = TOTAL_DISPLAY_TIME;
     lastUpdateTime = Date.now();
@@ -54,10 +49,9 @@ export function useInfoMessage() {
       if (remainingTime <= 0) {
         hideInfoMessage();
       }
-    }, 100); // Update every 100ms for smooth animation
+    }, 100);
   }
 
-  // Stop the progress bar
   function stopProgressBar() {
     if (progressInterval) {
       clearInterval(progressInterval);
@@ -65,12 +59,10 @@ export function useInfoMessage() {
     }
   }
 
-  // Pause the countdown
   function pauseCountdown() {
     stopProgressBar();
   }
 
-  // Resume the countdown
   function resumeCountdown() {
     if (showInfoMessage.value && !progressInterval) {
       lastUpdateTime = Date.now();
@@ -89,7 +81,6 @@ export function useInfoMessage() {
     }
   }
 
-  // Mark that user has interacted with the page
   function markInteracted() {
     hasInteracted.value = true;
     if (showInfoMessage.value) {
@@ -97,7 +88,6 @@ export function useInfoMessage() {
     }
   }
 
-  // Hide the info message and remember user preference
   function hideInfoMessage() {
     showInfoMessage.value = false;
     hasSeenInfoMessage.value = true;

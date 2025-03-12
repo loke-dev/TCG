@@ -30,18 +30,15 @@ import AppHeader from '~/components/AppHeader.vue';
 import AppFooter from '~/components/AppFooter.vue';
 import InfoMessage from '~/components/InfoMessage.vue';
 
-// Set up head metadata
 useHead({
   htmlAttrs: {
     lang: 'en',
   }
 });
 
-// Get color management functions
 const { colors, isShuffling, initColors, animate } = useColors();
 const backgroundEffects = ref(null);
 
-// Get info message management
 const {
   showInfoMessage,
   hasInteracted,
@@ -52,32 +49,22 @@ const {
   resumeCountdown
 } = useInfoMessage();
 
-// Watch for shuffling state changes and update BackgroundEffects component
 watch(isShuffling, (newValue) => {
   if (backgroundEffects.value) {
     backgroundEffects.value.setShuffling(newValue);
   }
 });
 
-// Initialize on component mount
 onMounted(() => {
-  // Initialize colors
   initColors();
-
-  // Initial animation
   animate(animateParticles);
 });
 
-// Handle click to shuffle
 function handleClick() {
-  // Mark that user has interacted with the page
   markInteracted();
-
-  // Shuffle colors
   animate(animateParticles);
 }
 
-// Animate particles using the BackgroundEffects component
 function animateParticles() {
   if (backgroundEffects.value) {
     backgroundEffects.value.animateParticles();

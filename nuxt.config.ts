@@ -21,7 +21,6 @@ export default defineNuxtConfig({
   vite: {
     build: {
       rollupOptions: {
-        // Force using the browser/WASM version of Rollup
         context: "globalThis",
       },
     },

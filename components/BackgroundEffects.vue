@@ -16,11 +16,9 @@ let animationFrameId = null;
 let particles = [];
 const DEBUG_MODE = false;
 
-// Store grid dimensions for reference
 let gridSize = 0;
-const PADDING = 80; // Increased padding from edges
+const PADDING = 80;
 
-// Particle class for managing individual particles
 class Particle {
   constructor(x, y, size, color, ctx, canvasWidth, canvasHeight) {
     this.x = x;
@@ -31,54 +29,42 @@ class Particle {
     this.canvasWidth = canvasWidth;
     this.canvasHeight = canvasHeight;
 
-    // Initial slow movement
     this.speedX = (Math.random() - 0.5) * 0.2;
     this.speedY = (Math.random() - 0.5) * 0.2;
 
-    // Physics properties
-    this.mass = this.size * 0.5; // Mass based on size
-    this.friction = 0.997; // Reduced friction to maintain movement longer
-    this.minSpeed = 0.1; // Moderate minimum speed
-    this.directionChangeTimer = 0; // Timer for gradual direction changes
-    this.directionChangePeriod = Math.random() * 200 + 100; // Random period for direction changes
+    this.mass = this.size * 0.5;
+    this.friction = 0.997;
+    this.minSpeed = 0.1;
+    this.directionChangeTimer = 0;
+    this.directionChangePeriod = Math.random() * 200 + 100;
 
-    // Visual properties
     this.alpha = 0.7;
     this.targetAlpha = 0.7;
     this.baseSize = size;
     this.targetSize = size;
 
-    // State
     this.isActive = false;
   }
 
   update() {
-    // Apply very slight friction to gradually slow down
     this.speedX *= this.friction;
     this.speedY *= this.friction;
 
-    // Ensure particles never completely stop moving
     const currentSpeed = Math.sqrt(this.speedX * this.speedX + this.speedY * this.speedY);
 
-    // For resting mode, create gentle flowing movement
     if (!this.isActive) {
-      // Increment direction change timer
       this.directionChangeTimer++;
 
-      // Gradually change direction over time for a flowing effect
       if (this.directionChangeTimer >= this.directionChangePeriod) {
-        // Reset timer and set new change period
         this.directionChangeTimer = 0;
         this.directionChangePeriod = Math.random() * 200 + 100;
 
-        // Apply a gentle nudge in a new direction
         const angle = Math.random() * Math.PI * 2;
         const nudgeStrength = 0.02;
         this.speedX += Math.cos(angle) * nudgeStrength;
         this.speedY += Math.sin(angle) * nudgeStrength;
       }
 
-      // If speed falls too low, gently increase it
       if (currentSpeed < this.minSpeed) {
         const speedRatio = this.minSpeed / currentSpeed;
         this.speedX *= speedRatio;
@@ -86,34 +72,28 @@ class Particle {
       }
     }
 
-    // Update position
     this.x += this.speedX;
     this.y += this.speedY;
 
-    // Gradually change alpha
     if (this.alpha < this.targetAlpha) {
       this.alpha += 0.01;
     } else if (this.alpha > this.targetAlpha) {
       this.alpha -= 0.01;
     }
 
-    // Gradually change size
     if (this.size < this.targetSize) {
       this.size += 0.1;
     } else if (this.size > this.targetSize) {
       this.size -= 0.1;
     }
 
-    // Bounce off edges with energy loss
-    const padding = 20; // Keep particles away from the very edge
+    const padding = 20;
     if (this.x < padding + this.size || this.x > this.canvasWidth - padding - this.size) {
-      this.speedX *= -0.85; // Lose some energy on bounce
+      this.speedX *= -0.85;
 
-      // Keep particle within bounds
       if (this.x < padding + this.size) this.x = padding + this.size;
       if (this.x > this.canvasWidth - padding - this.size) this.x = this.canvasWidth - padding - this.size;
 
-      // Visual effect on bounce
       this.targetSize = this.baseSize * 1.5;
       setTimeout(() => {
         this.targetSize = this.baseSize;
@@ -121,13 +101,11 @@ class Particle {
     }
 
     if (this.y < padding + this.size || this.y > this.canvasHeight - padding - this.size) {
-      this.speedY *= -0.85; // Lose some energy on bounce
+      this.speedY *= -0.85;
 
-      // Keep particle within bounds
       if (this.y < padding + this.size) this.y = padding + this.size;
       if (this.y > this.canvasHeight - padding - this.size) this.y = this.canvasHeight - padding - this.size;
 
-      // Visual effect on bounce
       this.targetSize = this.baseSize * 1.5;
       setTimeout(() => {
         this.targetSize = this.baseSize;
@@ -136,17 +114,14 @@ class Particle {
   }
 
   draw() {
-    // Determine if this is a special "glow" particle
     const isGlowParticle = this.color.includes('255, 255, 255');
 
-    // Draw glow effect
     const glow = this.size * (isGlowParticle ? 3 : 2);
     const gradient = this.ctx.createRadialGradient(
       this.x, this.y, 0,
       this.x, this.y, glow
     );
 
-    // Extract base color for glow
     const baseColor = this.color.replace(/[^,]+(?=\))/, '0.1');
     const innerColor = isGlowParticle ?
       this.color.replace(/[^,]+(?=\))/, '0.7') :
@@ -162,7 +137,6 @@ class Particle {
     this.ctx.arc(this.x, this.y, glow, 0, Math.PI * 2);
     this.ctx.fill();
 
-    // Draw main particle (except for glow particles which are just glow)
     if (!isGlowParticle) {
       this.ctx.globalAlpha = this.alpha;
       this.ctx.fillStyle = this.color;
@@ -183,34 +157,27 @@ class Particle {
   activate() {
     this.isActive = true;
 
-    // Schedule deactivation
     setTimeout(() => {
       this.isActive = false;
     }, 3000);
   }
 
   applyForce(forceX, forceY) {
-    // Apply force based on mass (F = ma, so a = F/m)
     this.speedX += forceX / this.mass;
     this.speedY += forceY / this.mass;
 
-    // Activate physics
     this.activate();
   }
 
   explodeFrom(centerX, centerY, force) {
-    // Calculate direction from center
     const dx = this.x - centerX;
     const dy = this.y - centerY;
     const distance = Math.sqrt(dx * dx + dy * dy);
 
-    // Avoid division by zero
     if (distance === 0) return;
 
-    // Force decreases with distance
     const actualForce = force / (1 + distance * 0.1);
 
-    // Apply force in direction away from center
     this.applyForce((dx / distance) * actualForce, (dy / distance) * actualForce);
   }
 
@@ -225,28 +192,19 @@ class Particle {
 }
 
 onMounted(() => {
-  // Initialize canvas
   initCanvas();
-
-  // Animate gradient orbs
   animateGradientOrbs();
-
-  // Add resize listener
   window.addEventListener('resize', handleResize);
 });
 
 onUnmounted(() => {
-  // Clean up animation frame
   if (animationFrameId) {
     cancelAnimationFrame(animationFrameId);
   }
-
-  // Clean up resize listener
   window.removeEventListener('resize', handleResize);
 });
 
 function handleResize() {
-  // Resize canvas
   if (particleCanvas.value) {
     const canvas = particleCanvas.value;
     const oldWidth = canvas.width;
@@ -255,13 +213,10 @@ function handleResize() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    // Update particle canvas dimensions and scale positions
     particles.forEach(particle => {
-      // Scale position proportionally
       particle.x = (particle.x / oldWidth) * canvas.width;
       particle.y = (particle.y / oldHeight) * canvas.height;
 
-      // Update canvas dimensions
       particle.canvasWidth = canvas.width;
       particle.canvasHeight = canvas.height;
     });
@@ -274,43 +229,35 @@ function initCanvas() {
   const canvas = particleCanvas.value;
   const ctx = canvas.getContext('2d');
 
-  // Set canvas dimensions to match window
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 
-  // Create initial particles
   createParticles(ctx, canvas.width, canvas.height);
 
-  // Start animation loop
   animate(ctx, canvas.width, canvas.height);
 
-  // Add debug border if in debug mode
   if (DEBUG_MODE) {
     canvas.style.border = '2px solid red';
   }
 }
 
 function createParticles(ctx, width, height) {
-  // Clear existing particles
   particles = [];
 
-  // Colors for particles with more variation and opacity differences
   const colors = [
-    'rgba(241, 87, 80, 0.7)',   // Red
-    'rgba(241, 87, 80, 0.5)',   // Light red
-    'rgba(255, 253, 118, 0.7)', // Yellow
-    'rgba(255, 253, 118, 0.5)', // Light yellow
-    'rgba(5, 117, 230, 0.7)',   // Blue
-    'rgba(5, 117, 230, 0.5)',   // Light blue
-    'rgba(160, 68, 255, 0.7)',  // Purple
-    'rgba(160, 68, 255, 0.5)',  // Light purple
-    'rgba(255, 255, 255, 0.4)', // White glow
+    'rgba(241, 87, 80, 0.7)',
+    'rgba(241, 87, 80, 0.5)',
+    'rgba(255, 253, 118, 0.7)',
+    'rgba(255, 253, 118, 0.5)',
+    'rgba(5, 117, 230, 0.7)',
+    'rgba(5, 117, 230, 0.5)',
+    'rgba(160, 68, 255, 0.7)',
+    'rgba(160, 68, 255, 0.5)',
+    'rgba(255, 255, 255, 0.4)',
   ];
 
-  // Create particles distributed across the canvas
-  const padding = 50; // Keep particles away from edges
+  const padding = 50;
 
-  // Create a wider range of particle sizes
   const particleSizes = {
     tiny: { min: 1, max: 2, count: 50 },
     small: { min: 2, max: 3.5, count: 60 },
@@ -318,28 +265,22 @@ function createParticles(ctx, width, height) {
     large: { min: 5, max: 7, count: 10 }
   };
 
-  // Create particles of different size categories
   Object.values(particleSizes).forEach(sizeCategory => {
     for (let i = 0; i < sizeCategory.count; i++) {
-      // Random position with padding from edges
       const x = padding + Math.random() * (width - padding * 2);
       const y = padding + Math.random() * (height - padding * 2);
 
       const size = sizeCategory.min + Math.random() * (sizeCategory.max - sizeCategory.min);
       const color = colors[Math.floor(Math.random() * colors.length)];
 
-      // Create particle
       const particle = new Particle(x, y, size, color, ctx, width, height);
 
-      // Vary initial velocity based on size (smaller particles move faster)
-      const speedFactor = 1.2 - (size / 7); // Smaller particles get higher speed factor
+      const speedFactor = 1.2 - (size / 7);
       particle.setRandomVelocity(0.05 * speedFactor, 0.25 * speedFactor);
 
-      // Vary friction slightly for each particle
-      particle.friction = 0.995 + (Math.random() * 0.004); // Between 0.995 and 0.999
+      particle.friction = 0.995 + (Math.random() * 0.004);
 
-      // Vary alpha based on size
-      const baseAlpha = 0.5 + (Math.random() * 0.3); // Between 0.5 and 0.8
+      const baseAlpha = 0.5 + (Math.random() * 0.3);
       particle.alpha = baseAlpha;
       particle.targetAlpha = baseAlpha;
 
@@ -349,16 +290,13 @@ function createParticles(ctx, width, height) {
 }
 
 function animate(ctx, width, height) {
-  // Clear canvas
   ctx.clearRect(0, 0, width, height);
 
-  // Update and draw particles
   particles.forEach(particle => {
     particle.update();
     particle.draw();
   });
 
-  // Continue animation loop
   animationFrameId = requestAnimationFrame(() => animate(ctx, width, height));
 }
 
@@ -375,7 +313,6 @@ function animateGradientOrbs() {
   });
 }
 
-// Expose methods to parent component
 defineExpose({
   animateParticles,
   setShuffling: (value) => {
@@ -386,22 +323,18 @@ defineExpose({
 function animateParticles() {
   if (!particleCanvas.value) return;
 
-  // Set shuffling state
   isShuffling.value = true;
 
   const canvas = particleCanvas.value;
   const centerX = canvas.width / 2;
   const centerY = canvas.height / 2;
 
-  // First phase: Gather particles toward center
   particles.forEach(particle => {
-    // Calculate direction to center
     const dx = centerX - particle.x;
     const dy = centerY - particle.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
 
     if (distance > 0) {
-      // Apply force toward center
       const force = 5 + Math.random() * 5;
       particle.speedX = (dx / distance) * force;
       particle.speedY = (dy / distance) * force;
@@ -410,23 +343,18 @@ function animateParticles() {
     }
   });
 
-  // Second phase: Explode with high energy
   setTimeout(() => {
     particles.forEach(particle => {
-      // More powerful explosion
       particle.explodeFrom(centerX, centerY, 20 + Math.random() * 20);
     });
   }, 800);
 
-  // Third phase: Random velocities
   setTimeout(() => {
     particles.forEach(particle => {
-      // Give each particle a random velocity
       particle.setRandomVelocity(1, 8);
     });
   }, 1600);
 
-  // Reset shuffling state after animation completes
   setTimeout(() => {
     isShuffling.value = false;
   }, 3000);
@@ -434,7 +362,6 @@ function animateParticles() {
 </script>
 
 <style scoped>
-/* Background effects container */
 .background-effects {
   position: fixed;
   top: 0;
@@ -446,7 +373,6 @@ function animateParticles() {
   pointer-events: none;
 }
 
-/* Gradient orbs */
 .gradient-orb {
   position: absolute;
   border-radius: 50%;

@@ -31,16 +31,14 @@ const props = defineProps({
   }
 });
 
-// Smooth 2D animation parameters
-const rotationAngle = ref(Math.random() * 10 - 5); // Small random rotation between -5 and 5 degrees
-const translateX = ref(Math.random() * 30 - 15); // Random X movement between -15px and 15px
-const translateY = ref(Math.random() * 20 - 10); // Random Y movement between -10px and 10px
-const scale = ref((0.92 + Math.random() * 0.16).toFixed(2)); // Random scale between 0.92 and 1.08
-const animationDuration = ref((0.6 + Math.random() * 0.3).toFixed(2)); // Between 0.6s and 0.9s
-const animationDelay = ref((Math.random() * 0.15).toFixed(2)); // Between 0s and 0.15s
-const brightness = ref((1 + Math.random() * 0.08).toFixed(2)); // Reduced brightness boost (1.00-1.08)
+const rotationAngle = ref(Math.random() * 10 - 5);
+const translateX = ref(Math.random() * 30 - 15);
+const translateY = ref(Math.random() * 20 - 10);
+const scale = ref((0.92 + Math.random() * 0.16).toFixed(2));
+const animationDuration = ref((0.6 + Math.random() * 0.3).toFixed(2));
+const animationDelay = ref((Math.random() * 0.15).toFixed(2));
+const brightness = ref((1 + Math.random() * 0.08).toFixed(2));
 
-// Store reference to card container for cleanup
 const cardContainer = ref(null);
 
 const cardStyle = computed(() => {
@@ -57,18 +55,16 @@ const cardStyle = computed(() => {
 
 watch(() => props.isShuffling, (newVal) => {
   if (newVal) {
-    // Randomize shuffle parameters each time shuffling starts
-    rotationAngle.value = Math.random() * 10 - 5; // Small random rotation between -5 and 5 degrees
-    translateX.value = Math.random() * 30 - 15; // Random X movement between -15px and 15px
-    translateY.value = Math.random() * 20 - 10; // Random Y movement between -10px and 10px
-    scale.value = (0.95 + Math.random() * 0.1).toFixed(2); // Subtle scale between 0.95 and 1.05
-    animationDuration.value = (0.7 + Math.random() * 0.2).toFixed(2); // Between 0.7s and 0.9s
-    animationDelay.value = (Math.random() * 0.1).toFixed(2); // Between 0s and 0.1s
-    brightness.value = (1 + Math.random() * 0.05).toFixed(2); // Subtle brightness boost (1.00-1.05)
+    rotationAngle.value = Math.random() * 10 - 5;
+    translateX.value = Math.random() * 30 - 15;
+    translateY.value = Math.random() * 20 - 10;
+    scale.value = (0.95 + Math.random() * 0.1).toFixed(2);
+    animationDuration.value = (0.7 + Math.random() * 0.2).toFixed(2);
+    animationDelay.value = (Math.random() * 0.1).toFixed(2);
+    brightness.value = (1 + Math.random() * 0.05).toFixed(2);
   }
 });
 
-// Optimized event handlers with throttling
 function throttle(func, limit) {
   let inThrottle;
   return function(e) {
@@ -90,22 +86,19 @@ const handleCardTilt = throttle((e) => {
   const centerX = rect.width / 2;
   const centerY = rect.height / 2;
 
-  // Calculate tilt with smoother values and damping
-  const maxTilt = 10; // Reduced maximum tilt angle
+  const maxTilt = 10;
   const percentX = (x - centerX) / (rect.width / 2);
   const percentY = (y - centerY) / (rect.height / 2);
 
-  // Apply damping for smoother effect
-  const rotateX = percentY * maxTilt * 0.5; // Reduced vertical tilt
-  const rotateY = -percentX * maxTilt * 0.7; // Reduced horizontal tilt
-  const translateZ = 5; // Reduced depth effect for subtlety
+  const rotateX = percentY * maxTilt * 0.5;
+  const rotateY = -percentX * maxTilt * 0.7;
+  const translateZ = 5;
 
-  // Use CSS transform with easing for smoother transitions
   requestAnimationFrame(() => {
     card.style.transition = 'transform 0.1s cubic-bezier(0.2, 0.8, 0.2, 1)';
     card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(${translateZ}px)`;
   });
-}, 16); // Increased throttle time for smoother performance
+}, 16);
 
 function resetCardTilt(e) {
   const card = e.currentTarget.querySelector('.card');
@@ -125,7 +118,6 @@ const handleCardShine = throttle((e) => {
   const x = e.clientX - rect.left;
   const y = e.clientY - rect.top;
 
-  // Use a smoother gradient with better opacity values
   requestAnimationFrame(() => {
     shine.style.background = `radial-gradient(
       circle at ${x}px ${y}px,
@@ -134,10 +126,9 @@ const handleCardShine = throttle((e) => {
       rgba(255, 255, 255, 0) 50%
     )`;
   });
-}, 16); // Increased throttle time for smoother performance
+}, 16);
 
 onMounted(() => {
-  // Add hover effects to cards
   cardContainer.value = document.querySelector(`.${props.color.id}`).parentElement;
 
   if (cardContainer.value) {
@@ -148,7 +139,6 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-  // Clean up event listeners
   if (cardContainer.value) {
     cardContainer.value.removeEventListener('mousemove', handleCardTilt);
     cardContainer.value.removeEventListener('mouseleave', resetCardTilt);
@@ -158,7 +148,6 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-/* Card styles */
 .card-container {
   perspective: 1000px;
   margin: 0.5rem;
@@ -225,7 +214,6 @@ onBeforeUnmount(() => {
   opacity: 1;
 }
 
-/* Color-specific card styles */
 .red .card-back {
   background-color: #f15750;
   box-shadow:
@@ -258,7 +246,6 @@ onBeforeUnmount(() => {
     inset 0 0 15px rgba(255, 255, 255, 0.3);
 }
 
-/* Color cards with enhanced gradients */
 .red .card-front {
   background: linear-gradient(135deg, #ff8a80, #f15750, #c62828);
   box-shadow:
@@ -291,7 +278,6 @@ onBeforeUnmount(() => {
     inset 0 0 15px rgba(255, 255, 255, 0.3);
 }
 
-/* New 2D shuffle animation */
 .card.is-flipping {
   animation-name: cardShuffle;
   animation-duration: var(--animation-duration, 0.7s);
@@ -335,7 +321,6 @@ onBeforeUnmount(() => {
   }
 }
 
-/* Responsive styles */
 @media (max-width: 768px) {
   .card {
     width: 8rem;
