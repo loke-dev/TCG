@@ -31,28 +31,7 @@
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(255, 255, 255, 0.2);
   position: relative;
-  z-index: 2;
-}
-
-.vs-circle::before,
-.vs-circle::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  width: 2px;
-  background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0));
-  transform: translateX(-50%);
-  z-index: 1;
-}
-
-.vs-circle::before {
-  top: -35%;
-  height: 35%;
-}
-
-.vs-circle::after {
-  bottom: -35%;
-  height: 35%;
+  z-index: 3;
 }
 
 .vs-text {

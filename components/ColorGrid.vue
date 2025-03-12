@@ -60,6 +60,7 @@ watch(() => props.isShuffling, (newVal) => {
   grid-template-areas:
     "team1-1 team1-1 versus team2-1 team2-1"
     "team1-2 team1-2 versus team2-2 team2-2";
+  box-sizing: border-box;
   width: 100%;
   max-width: 900px;
   gap: 2rem 1.5rem;
@@ -83,6 +84,12 @@ watch(() => props.isShuffling, (newVal) => {
 
 .versus-element {
   grid-area: versus;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
 }
 
 .team-card-3 {

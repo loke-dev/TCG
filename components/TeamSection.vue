@@ -1,7 +1,6 @@
 <template>
   <div class="team-section-wrapper">
     <h2 class="team-title team1-title">Team 1</h2>
-    <div class="divider-line"></div>
     <h2 class="team-title team2-title">Team 2</h2>
   </div>
 </template>
@@ -16,10 +15,11 @@
   width: 100%;
   height: 4rem;
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: 1fr 1fr;
   align-items: center;
   z-index: 1;
   padding: 0 1rem;
+  position: relative;
 }
 
 .team-title {
@@ -70,18 +70,6 @@
 
 .team-title:hover::before {
   left: 100%;
-}
-
-.divider-line {
-  width: 2px;
-  height: 100%;
-  background: linear-gradient(to bottom,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.3) 20%,
-    rgba(255, 255, 255, 0.3) 80%,
-    rgba(255, 255, 255, 0) 100%);
-  justify-self: center;
-  z-index: 2;
 }
 
 /* Responsive styles */

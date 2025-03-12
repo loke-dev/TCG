@@ -27,7 +27,7 @@ defineProps({
   box-sizing: border-box;
   padding: 2rem;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   width: 100%;
   max-width: 1000px;
   min-height: 500px;
@@ -35,6 +35,25 @@ defineProps({
   grid-template-rows: auto 1fr;
   gap: 1.5rem;
   margin: 1.5rem auto;
+}
+
+.content::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  transform: translateX(-50%);
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.5) 10%,
+    rgba(255, 255, 255, 0.5) 90%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  z-index: 1;
+  pointer-events: none;
 }
 
 @media (max-width: 1200px) {
