@@ -1,6 +1,6 @@
 <template>
   <Head>
-    <Title>Team Color Generator test</Title>
+    <Title>Team Color Generator</Title>
     <Meta
       name="description"
       content="Generate team colors for playstation games."
