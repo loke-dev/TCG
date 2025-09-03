@@ -1,5 +1,10 @@
 <template>
-  <transition-group v-if="colors.length > 0" name="shuffle" class="colors-wrapper" tag="div">
+  <transition-group
+    v-if="colors.length > 0"
+    name="shuffle"
+    class="colors-wrapper"
+    tag="div"
+  >
     <ColorCard
       v-for="(color, index) in [displayColors[0], displayColors[1]]"
       :key="color.id"
@@ -9,7 +14,7 @@
     />
 
     <VersusElement key="vs" class="versus-element" />
-
+    1
     <ColorCard
       v-for="(color, index) in [displayColors[2], displayColors[3]]"
       :key="color.id"
@@ -21,29 +26,35 @@
 </template>
 
 <script setup>
-import { defineProps, ref, watch, computed } from 'vue';
-import ColorCard from './ColorCard.vue';
-import VersusElement from './VersusElement.vue';
+import { defineProps, ref, watch, computed } from "vue";
+import ColorCard from "./ColorCard.vue";
+import VersusElement from "./VersusElement.vue";
 
 const props = defineProps({
   colors: {
     type: Array,
-    required: true
+    required: true,
   },
   isShuffling: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 });
 
 const displayColors = ref([...props.colors]);
 
-watch(() => props.colors, (newColors) => {
-  displayColors.value = [...newColors];
-}, { deep: true });
+watch(
+  () => props.colors,
+  (newColors) => {
+    displayColors.value = [...newColors];
+  },
+  { deep: true }
+);
 
-watch(() => props.isShuffling, (newVal) => {
-});
+watch(
+  () => props.isShuffling,
+  (newVal) => {}
+);
 </script>
 
 <style scoped>
@@ -98,12 +109,14 @@ watch(() => props.isShuffling, (newVal) => {
   will-change: transform;
 }
 
-.shuffle-enter-active, .shuffle-leave-active {
+.shuffle-enter-active,
+.shuffle-leave-active {
   transition: all 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
   will-change: transform, opacity;
 }
 
-.shuffle-enter-from, .shuffle-leave-to {
+.shuffle-enter-from,
+.shuffle-leave-to {
   opacity: 0;
   transform: scale(0.9);
 }
