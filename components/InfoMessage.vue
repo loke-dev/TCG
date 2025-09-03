@@ -10,7 +10,6 @@
         <p>Click anywhere to shuffle the team colors!</p>
         <div class="progress-bar-container">
           <div class="progress-bar" :style="{ width: `${progress}%` }"></div>
-          1
         </div>
       </div>
       <button class="close-button" @click.stop="onClose">

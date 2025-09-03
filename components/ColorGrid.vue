@@ -14,7 +14,6 @@
     />
 
     <VersusElement key="vs" class="versus-element" />
-    1
     <ColorCard
       v-for="(color, index) in [displayColors[2], displayColors[3]]"
       :key="color.id"
