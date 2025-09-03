@@ -10,10 +10,21 @@
         <p>Click anywhere to shuffle the team colors!</p>
         <div class="progress-bar-container">
           <div class="progress-bar" :style="{ width: `${progress}%` }"></div>
+          1
         </div>
       </div>
       <button class="close-button" @click.stop="onClose">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
           <line x1="18" y1="6" x2="6" y2="18"></line>
           <line x1="6" y1="6" x2="18" y2="18"></line>
         </svg>
@@ -23,23 +34,23 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from 'vue';
+import { defineProps, defineEmits } from "vue";
 
 const props = defineProps({
   show: {
     type: Boolean,
-    default: false
+    default: false,
   },
   progress: {
     type: Number,
-    default: 100
-  }
+    default: 100,
+  },
 });
 
-const emit = defineEmits(['close', 'pause', 'resume']);
+const emit = defineEmits(["close", "pause", "resume"]);
 
 function onClose() {
-  emit('close');
+  emit("close");
 }
 </script>
 
