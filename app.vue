@@ -1,7 +1,10 @@
 <template>
   <Head>
-    <Title>Team Color Generator</Title>
-    <Meta name="description" content="Generate team colors for playstation games."/>
+    <Title>Team Color Generator test</Title>
+    <Meta
+      name="description"
+      content="Generate team colors for playstation games."
+    />
   </Head>
   <div class="app-background">
     <BackgroundEffects ref="backgroundEffects" />
@@ -21,19 +24,19 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
-import { useColors } from '~/composables/useColors';
-import { useInfoMessage } from '~/composables/useInfoMessage';
-import BackgroundEffects from '~/components/BackgroundEffects.vue';
-import MainContent from '~/components/MainContent.vue';
-import AppHeader from '~/components/AppHeader.vue';
-import AppFooter from '~/components/AppFooter.vue';
-import InfoMessage from '~/components/InfoMessage.vue';
+import { ref, onMounted, watch } from "vue";
+import { useColors } from "~/composables/useColors";
+import { useInfoMessage } from "~/composables/useInfoMessage";
+import BackgroundEffects from "~/components/BackgroundEffects.vue";
+import MainContent from "~/components/MainContent.vue";
+import AppHeader from "~/components/AppHeader.vue";
+import AppFooter from "~/components/AppFooter.vue";
+import InfoMessage from "~/components/InfoMessage.vue";
 
 useHead({
   htmlAttrs: {
-    lang: 'en',
-  }
+    lang: "en",
+  },
 });
 
 const { colors, isShuffling, initColors, animate } = useColors();
@@ -46,7 +49,7 @@ const {
   markInteracted,
   hideInfoMessage,
   pauseCountdown,
-  resumeCountdown
+  resumeCountdown,
 } = useInfoMessage();
 
 watch(isShuffling, (newValue) => {
@@ -73,7 +76,7 @@ function animateParticles() {
 </script>
 
 <style>
-@import '~/assets/css/global.css';
+@import "~/assets/css/global.css";
 
 .app-background {
   position: relative;
