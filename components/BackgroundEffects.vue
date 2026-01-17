@@ -30,10 +30,8 @@ const getParticleCount = () => {
   return { tiny: 30, small: 40, medium: 20, large: 8 }; // 98 total (reduced from 150)
 };
 
-// Frame rate limiting
+// Animation state
 let lastFrameTime = 0;
-const targetFPS = 60;
-const frameInterval = 1000 / targetFPS;
 
 class Particle {
   constructor(x, y, size, color, ctx, canvasWidth, canvasHeight) {
@@ -58,6 +56,8 @@ class Particle {
     this.targetAlpha = 0.7;
     this.baseSize = size;
     this.targetSize = size;
+    this.sizeAnimationTimer = 0;
+    this.sizeAnimationDuration = 0;
 
     this.isActive = false;
 
@@ -67,9 +67,6 @@ class Particle {
     this.lastGradientY = null;
     this.gradientRadius = 0;
 
-    // Skip updates for very slow particles
-    this.skipFrames = 0;
-    this.frameCounter = 0;
   }
 
   update() {
@@ -77,19 +74,6 @@ class Particle {
     this.speedY *= this.friction;
 
     const currentSpeed = Math.sqrt(this.speedX * this.speedX + this.speedY * this.speedY);
-
-    // Performance: skip updates for very slow particles occasionally
-    if (!this.isActive && currentSpeed < 0.05) {
-      this.frameCounter++;
-      if (this.frameCounter % 2 === 0) {
-        // Still update position even if skipping some calculations
-        this.x += this.speedX;
-        this.y += this.speedY;
-        return; // Skip every other frame for very slow particles
-      }
-    } else {
-      this.frameCounter = 0;
-    }
 
     if (!this.isActive) {
       this.directionChangeTimer++;
@@ -114,17 +98,38 @@ class Particle {
     this.x += this.speedX;
     this.y += this.speedY;
 
-    if (this.alpha < this.targetAlpha) {
-      this.alpha += 0.01;
-    } else if (this.alpha > this.targetAlpha) {
-      this.alpha -= 0.01;
+    // Smooth alpha transitions - use smaller increments for smoother animation
+    const alphaDiff = this.targetAlpha - this.alpha;
+    if (Math.abs(alphaDiff) > 0.001) {
+      this.alpha += alphaDiff * 0.05; // Smooth interpolation
+    } else {
+      this.alpha = this.targetAlpha;
     }
 
-    if (this.size < this.targetSize) {
-      this.size += 0.1;
-    } else if (this.size > this.targetSize) {
-      this.size -= 0.1;
+    // Smooth size transitions with animation timer
+    if (this.sizeAnimationTimer > 0) {
+      this.sizeAnimationTimer--;
+      if (this.sizeAnimationTimer === 0) {
+        // Animation complete, smoothly return to base size
+        // Don't set directly, let interpolation handle it
+        this.targetSize = this.baseSize;
+      }
     }
+
+    // Smooth size interpolation - prevent sudden jumps
+    // Use exponential easing for smoother transitions
+    const sizeDiff = this.targetSize - this.size;
+    if (Math.abs(sizeDiff) > 0.001) {
+      // Exponential interpolation for smooth, natural motion
+      const easingFactor = Math.abs(sizeDiff) > 0.5 ? 0.2 : 0.12;
+      this.size += sizeDiff * easingFactor;
+    } else {
+      this.size = this.targetSize;
+    }
+
+    // Clamp size to prevent any extreme values
+    if (this.size < this.baseSize * 0.5) this.size = this.baseSize * 0.5;
+    if (this.size > this.baseSize * 2) this.size = this.baseSize * 2;
 
     const padding = 20;
     if (this.x < padding + this.size || this.x > this.canvasWidth - padding - this.size) {
@@ -133,13 +138,12 @@ class Particle {
       if (this.x < padding + this.size) this.x = padding + this.size;
       if (this.x > this.canvasWidth - padding - this.size) this.x = this.canvasWidth - padding - this.size;
 
-      this.targetSize = this.baseSize * 1.5;
-      // Use requestAnimationFrame instead of setTimeout
-      requestAnimationFrame(() => {
-        setTimeout(() => {
-          this.targetSize = this.baseSize;
-        }, 100);
-      });
+      // Smooth size animation on collision - use frame-based timer instead of setTimeout
+      // Only trigger if not already animating to prevent rapid size changes
+      if (this.sizeAnimationTimer === 0 && Math.abs(this.targetSize - this.baseSize) < 0.1) {
+        this.targetSize = this.baseSize * 1.25; // Smaller, smoother pop
+        this.sizeAnimationTimer = 8; // ~8 frames at 60fps = ~133ms for smoother return
+      }
     }
 
     if (this.y < padding + this.size || this.y > this.canvasHeight - padding - this.size) {
@@ -148,12 +152,12 @@ class Particle {
       if (this.y < padding + this.size) this.y = padding + this.size;
       if (this.y > this.canvasHeight - padding - this.size) this.y = this.canvasHeight - padding - this.size;
 
-      this.targetSize = this.baseSize * 1.5;
-      requestAnimationFrame(() => {
-        setTimeout(() => {
-          this.targetSize = this.baseSize;
-        }, 100);
-      });
+      // Smooth size animation on collision - use frame-based timer instead of setTimeout
+      // Only trigger if not already animating to prevent rapid size changes
+      if (this.sizeAnimationTimer === 0 && Math.abs(this.targetSize - this.baseSize) < 0.1) {
+        this.targetSize = this.baseSize * 1.25; // Smaller, smoother pop
+        this.sizeAnimationTimer = 8; // ~8 frames at 60fps = ~133ms for smoother return
+      }
     }
   }
 
@@ -161,11 +165,14 @@ class Particle {
     const isGlowParticle = this.color.includes('255, 255, 255');
     const glow = this.size * (isGlowParticle ? 3 : 2);
 
-    // Performance: only recreate gradient if position changed significantly
+    // Always recreate gradient for smooth visual movement
+    // Canvas gradients are tied to their creation coordinates, so we need to
+    // recreate them frequently for smooth visual effects
+    // Use small threshold to balance performance and smoothness
     const needsNewGradient = !this.cachedGradient ||
-      Math.abs(this.x - this.lastGradientX) > 5 ||
-      Math.abs(this.y - this.lastGradientY) > 5 ||
-      Math.abs(glow - this.gradientRadius) > 2;
+      Math.abs(this.x - this.lastGradientX) > 1.5 ||
+      Math.abs(this.y - this.lastGradientY) > 1.5 ||
+      Math.abs(glow - this.gradientRadius) > 0.5;
 
     if (needsNewGradient) {
       this.cachedGradient = this.ctx.createRadialGradient(
@@ -271,7 +278,6 @@ onMounted(() => {
     // Start animation loop with empty particles (smooth background)
     if (particleCanvas.value) {
       const canvas = particleCanvas.value;
-      lastFrameTime = performance.now();
       animate(ctx, canvas.width, canvas.height);
     }
 
@@ -439,26 +445,20 @@ function createParticles(ctx, width, height) {
 function animate(ctx, width, height) {
   if (!ctx) return;
 
-  const currentTime = performance.now();
-  const elapsed = currentTime - lastFrameTime;
+  // Always render on every frame for smooth animation
+  // requestAnimationFrame already syncs with display refresh rate
+  ctx.clearRect(0, 0, width, height);
 
-  // Frame rate limiting
-  if (elapsed >= frameInterval) {
-    lastFrameTime = currentTime - (elapsed % frameInterval);
+  // Only animate if particles exist (allows smooth background before particles load)
+  if (particles.length > 0) {
+    // Update all particles every frame for smooth motion
+    particles.forEach(particle => {
+      particle.update();
+    });
 
-    ctx.clearRect(0, 0, width, height);
-
-    // Only animate if particles exist (allows smooth background before particles load)
-    if (particles.length > 0) {
-      // Performance: batch operations
-      particles.forEach(particle => {
-        particle.update();
-      });
-
-      particles.forEach(particle => {
-        particle.draw();
-      });
-    }
+    particles.forEach(particle => {
+      particle.draw();
+    });
   }
 
   animationFrameId = requestAnimationFrame(() => animate(ctx, width, height));
