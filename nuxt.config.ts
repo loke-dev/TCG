@@ -5,6 +5,22 @@ export default defineNuxtConfig({
 
   modules: ["@vite-pwa/nuxt"],
 
+  app: {
+    head: {
+      link: [
+        {
+          rel: "preconnect",
+          href: "https://fonts.googleapis.com",
+        },
+        {
+          rel: "preconnect",
+          href: "https://fonts.gstatic.com",
+          crossorigin: "",
+        },
+      ],
+    },
+  },
+
   pwa: {
     manifest: {
       name: "Team Color Generator",

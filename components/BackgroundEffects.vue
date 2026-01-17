@@ -19,6 +19,22 @@ const DEBUG_MODE = false;
 let gridSize = 0;
 const PADDING = 80;
 
+// Performance optimization: detect device capabilities
+const getParticleCount = () => {
+  const isMobile = window.innerWidth < 768;
+  const isLowEnd = navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2;
+
+  if (isMobile || isLowEnd) {
+    return { tiny: 20, small: 30, medium: 15, large: 5 }; // 70 total
+  }
+  return { tiny: 30, small: 40, medium: 20, large: 8 }; // 98 total (reduced from 150)
+};
+
+// Frame rate limiting
+let lastFrameTime = 0;
+const targetFPS = 60;
+const frameInterval = 1000 / targetFPS;
+
 class Particle {
   constructor(x, y, size, color, ctx, canvasWidth, canvasHeight) {
     this.x = x;
@@ -44,6 +60,16 @@ class Particle {
     this.targetSize = size;
 
     this.isActive = false;
+
+    // Performance: cache gradient and only recreate when needed
+    this.cachedGradient = null;
+    this.lastGradientX = null;
+    this.lastGradientY = null;
+    this.gradientRadius = 0;
+
+    // Skip updates for very slow particles
+    this.skipFrames = 0;
+    this.frameCounter = 0;
   }
 
   update() {
@@ -51,6 +77,19 @@ class Particle {
     this.speedY *= this.friction;
 
     const currentSpeed = Math.sqrt(this.speedX * this.speedX + this.speedY * this.speedY);
+
+    // Performance: skip updates for very slow particles occasionally
+    if (!this.isActive && currentSpeed < 0.05) {
+      this.frameCounter++;
+      if (this.frameCounter % 2 === 0) {
+        // Still update position even if skipping some calculations
+        this.x += this.speedX;
+        this.y += this.speedY;
+        return; // Skip every other frame for very slow particles
+      }
+    } else {
+      this.frameCounter = 0;
+    }
 
     if (!this.isActive) {
       this.directionChangeTimer++;
@@ -95,9 +134,12 @@ class Particle {
       if (this.x > this.canvasWidth - padding - this.size) this.x = this.canvasWidth - padding - this.size;
 
       this.targetSize = this.baseSize * 1.5;
-      setTimeout(() => {
-        this.targetSize = this.baseSize;
-      }, 100);
+      // Use requestAnimationFrame instead of setTimeout
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          this.targetSize = this.baseSize;
+        }, 100);
+      });
     }
 
     if (this.y < padding + this.size || this.y > this.canvasHeight - padding - this.size) {
@@ -107,32 +149,46 @@ class Particle {
       if (this.y > this.canvasHeight - padding - this.size) this.y = this.canvasHeight - padding - this.size;
 
       this.targetSize = this.baseSize * 1.5;
-      setTimeout(() => {
-        this.targetSize = this.baseSize;
-      }, 100);
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          this.targetSize = this.baseSize;
+        }, 100);
+      });
     }
   }
 
   draw() {
     const isGlowParticle = this.color.includes('255, 255, 255');
-
     const glow = this.size * (isGlowParticle ? 3 : 2);
-    const gradient = this.ctx.createRadialGradient(
-      this.x, this.y, 0,
-      this.x, this.y, glow
-    );
 
-    const baseColor = this.color.replace(/[^,]+(?=\))/, '0.1');
-    const innerColor = isGlowParticle ?
-      this.color.replace(/[^,]+(?=\))/, '0.7') :
-      this.color;
+    // Performance: only recreate gradient if position changed significantly
+    const needsNewGradient = !this.cachedGradient ||
+      Math.abs(this.x - this.lastGradientX) > 5 ||
+      Math.abs(this.y - this.lastGradientY) > 5 ||
+      Math.abs(glow - this.gradientRadius) > 2;
 
-    gradient.addColorStop(0, innerColor);
-    gradient.addColorStop(0.6, this.color);
-    gradient.addColorStop(1, baseColor);
+    if (needsNewGradient) {
+      this.cachedGradient = this.ctx.createRadialGradient(
+        this.x, this.y, 0,
+        this.x, this.y, glow
+      );
+
+      const baseColor = this.color.replace(/[^,]+(?=\))/, '0.1');
+      const innerColor = isGlowParticle ?
+        this.color.replace(/[^,]+(?=\))/, '0.7') :
+        this.color;
+
+      this.cachedGradient.addColorStop(0, innerColor);
+      this.cachedGradient.addColorStop(0.6, this.color);
+      this.cachedGradient.addColorStop(1, baseColor);
+
+      this.lastGradientX = this.x;
+      this.lastGradientY = this.y;
+      this.gradientRadius = glow;
+    }
 
     this.ctx.globalAlpha = this.alpha;
-    this.ctx.fillStyle = gradient;
+    this.ctx.fillStyle = this.cachedGradient;
     this.ctx.beginPath();
     this.ctx.arc(this.x, this.y, glow, 0, Math.PI * 2);
     this.ctx.fill();
@@ -191,8 +247,43 @@ class Particle {
   }
 }
 
+let resizeTimeout = null;
+let ctx = null;
+let canvasInitialized = false;
+let particlesCreated = false;
+
 onMounted(() => {
-  initCanvas();
+  // Defer heavy operations to avoid blocking initial render
+  // Start with minimal setup, then progressively load
+  requestAnimationFrame(() => {
+    // Use requestIdleCallback if available, otherwise setTimeout
+    const defer = (callback) => {
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(callback, { timeout: 100 });
+      } else {
+        setTimeout(callback, 50);
+      }
+    };
+
+    // Initialize canvas first (lightweight)
+    initCanvasBasic();
+
+    // Start animation loop with empty particles (smooth background)
+    if (particleCanvas.value) {
+      const canvas = particleCanvas.value;
+      lastFrameTime = performance.now();
+      animate(ctx, canvas.width, canvas.height);
+    }
+
+    // Defer particle creation until after initial render
+    defer(() => {
+      if (particleCanvas.value && ctx) {
+        createParticles(ctx, particleCanvas.value.width, particleCanvas.value.height);
+      }
+    });
+  });
+
+  // Gradient orbs can start immediately (CSS animations are lightweight)
   animateGradientOrbs();
   window.addEventListener('resize', handleResize);
 });
@@ -201,40 +292,64 @@ onUnmounted(() => {
   if (animationFrameId) {
     cancelAnimationFrame(animationFrameId);
   }
+  if (resizeTimeout) {
+    clearTimeout(resizeTimeout);
+  }
   window.removeEventListener('resize', handleResize);
 });
 
 function handleResize() {
-  if (particleCanvas.value) {
-    const canvas = particleCanvas.value;
-    const oldWidth = canvas.width;
-    const oldHeight = canvas.height;
-
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    particles.forEach(particle => {
-      particle.x = (particle.x / oldWidth) * canvas.width;
-      particle.y = (particle.y / oldHeight) * canvas.height;
-
-      particle.canvasWidth = canvas.width;
-      particle.canvasHeight = canvas.height;
-    });
+  // Debounce resize to avoid performance issues
+  if (resizeTimeout) {
+    clearTimeout(resizeTimeout);
   }
+
+  resizeTimeout = setTimeout(() => {
+    if (particleCanvas.value && ctx) {
+      const canvas = particleCanvas.value;
+      const oldWidth = canvas.width;
+      const oldHeight = canvas.height;
+
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      // Update canvas context reference if needed
+      if (!ctx || ctx.canvas !== canvas) {
+        ctx = canvas.getContext('2d', { alpha: true });
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+      }
+
+      if (particles.length > 0) {
+        particles.forEach(particle => {
+          particle.x = (particle.x / oldWidth) * canvas.width;
+          particle.y = (particle.y / oldHeight) * canvas.height;
+
+          particle.canvasWidth = canvas.width;
+          particle.canvasHeight = canvas.height;
+
+          // Invalidate cached gradient on resize
+          particle.cachedGradient = null;
+        });
+      }
+    }
+  }, 150);
 }
 
-function initCanvas() {
-  if (!particleCanvas.value) return;
+function initCanvasBasic() {
+  if (!particleCanvas.value || canvasInitialized) return;
 
   const canvas = particleCanvas.value;
-  const ctx = canvas.getContext('2d');
+  ctx = canvas.getContext('2d', { alpha: true });
 
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 
-  createParticles(ctx, canvas.width, canvas.height);
+  // Performance: enable hardware acceleration hints
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
 
-  animate(ctx, canvas.width, canvas.height);
+  canvasInitialized = true;
 
   if (DEBUG_MODE) {
     canvas.style.border = '2px solid red';
@@ -242,6 +357,8 @@ function initCanvas() {
 }
 
 function createParticles(ctx, width, height) {
+  if (!ctx || particlesCreated) return;
+
   particles = [];
 
   const colors = [
@@ -258,44 +375,91 @@ function createParticles(ctx, width, height) {
 
   const padding = 50;
 
-  const particleSizes = {
-    tiny: { min: 1, max: 2, count: 50 },
-    small: { min: 2, max: 3.5, count: 60 },
-    medium: { min: 3.5, max: 5, count: 30 },
-    large: { min: 5, max: 7, count: 10 }
+  // Use adaptive particle count based on device performance
+  const particleCounts = getParticleCount();
+  const particleSizes = [
+    { min: 1, max: 2, count: particleCounts.tiny, name: 'tiny' },
+    { min: 2, max: 3.5, count: particleCounts.small, name: 'small' },
+    { min: 3.5, max: 5, count: particleCounts.medium, name: 'medium' },
+    { min: 5, max: 7, count: particleCounts.large, name: 'large' }
+  ];
+
+  // Create particles progressively in batches to avoid blocking
+  let sizeIndex = 0;
+  let particleIndex = 0;
+  const batchSize = 12; // Smaller batches for smoother loading
+
+  const createBatch = () => {
+    let created = 0;
+
+    while (created < batchSize && sizeIndex < particleSizes.length) {
+      const sizeCategory = particleSizes[sizeIndex];
+
+      if (particleIndex < sizeCategory.count) {
+        const x = padding + Math.random() * (width - padding * 2);
+        const y = padding + Math.random() * (height - padding * 2);
+        const size = sizeCategory.min + Math.random() * (sizeCategory.max - sizeCategory.min);
+        const color = colors[Math.floor(Math.random() * colors.length)];
+
+        const particle = new Particle(x, y, size, color, ctx, width, height);
+        const speedFactor = 1.2 - (size / 7);
+        particle.setRandomVelocity(0.05 * speedFactor, 0.25 * speedFactor);
+        particle.friction = 0.995 + (Math.random() * 0.004);
+
+        const baseAlpha = 0.5 + (Math.random() * 0.3);
+        particle.alpha = baseAlpha;
+        particle.targetAlpha = baseAlpha;
+
+        particles.push(particle);
+        particleIndex++;
+        created++;
+      } else {
+        // Move to next size category
+        sizeIndex++;
+        particleIndex = 0;
+      }
+    }
+
+    // Continue creating if there are more particles to create
+    if (sizeIndex < particleSizes.length) {
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(createBatch, { timeout: 16 });
+      } else {
+        setTimeout(createBatch, 16);
+      }
+    } else {
+      particlesCreated = true;
+    }
   };
 
-  Object.values(particleSizes).forEach(sizeCategory => {
-    for (let i = 0; i < sizeCategory.count; i++) {
-      const x = padding + Math.random() * (width - padding * 2);
-      const y = padding + Math.random() * (height - padding * 2);
-
-      const size = sizeCategory.min + Math.random() * (sizeCategory.max - sizeCategory.min);
-      const color = colors[Math.floor(Math.random() * colors.length)];
-
-      const particle = new Particle(x, y, size, color, ctx, width, height);
-
-      const speedFactor = 1.2 - (size / 7);
-      particle.setRandomVelocity(0.05 * speedFactor, 0.25 * speedFactor);
-
-      particle.friction = 0.995 + (Math.random() * 0.004);
-
-      const baseAlpha = 0.5 + (Math.random() * 0.3);
-      particle.alpha = baseAlpha;
-      particle.targetAlpha = baseAlpha;
-
-      particles.push(particle);
-    }
-  });
+  // Start creating particles
+  createBatch();
 }
 
 function animate(ctx, width, height) {
-  ctx.clearRect(0, 0, width, height);
+  if (!ctx) return;
 
-  particles.forEach(particle => {
-    particle.update();
-    particle.draw();
-  });
+  const currentTime = performance.now();
+  const elapsed = currentTime - lastFrameTime;
+
+  // Frame rate limiting
+  if (elapsed >= frameInterval) {
+    lastFrameTime = currentTime - (elapsed % frameInterval);
+
+    ctx.clearRect(0, 0, width, height);
+
+    // Only animate if particles exist (allows smooth background before particles load)
+    if (particles.length > 0) {
+      // Performance: batch operations
+      particles.forEach(particle => {
+        particle.update();
+      });
+
+      particles.forEach(particle => {
+        particle.draw();
+      });
+    }
+  }
 
   animationFrameId = requestAnimationFrame(() => animate(ctx, width, height));
 }
@@ -419,5 +583,8 @@ function animateParticles() {
   width: 100%;
   height: 100%;
   z-index: 1;
+  /* Performance: hint to browser for GPU acceleration */
+  will-change: contents;
+  transform: translateZ(0);
 }
 </style>

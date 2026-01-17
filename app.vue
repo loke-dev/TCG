@@ -60,7 +60,12 @@ watch(isShuffling, (newValue) => {
 
 onMounted(() => {
   initColors();
-  animate(animateParticles);
+  // Defer initial animation to avoid blocking initial render
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      animate(animateParticles);
+    }, 100);
+  });
 });
 
 function handleClick() {
