@@ -16,9 +16,6 @@ let animationFrameId = null;
 let particles = [];
 const DEBUG_MODE = false;
 
-let gridSize = 0;
-const PADDING = 80;
-
 // Performance optimization: detect device capabilities
 const getParticleCount = () => {
   const isMobile = window.innerWidth < 768;
@@ -29,9 +26,6 @@ const getParticleCount = () => {
   }
   return { tiny: 30, small: 40, medium: 20, large: 8 }; // 98 total (reduced from 150)
 };
-
-// Animation state
-let lastFrameTime = 0;
 
 class Particle {
   constructor(x, y, size, color, ctx, canvasWidth, canvasHeight) {
