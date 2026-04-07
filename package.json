@@ -12,5 +12,8 @@
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "*"
+  },
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1"
   }
 }
