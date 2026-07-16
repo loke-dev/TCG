@@ -53,20 +53,29 @@
             </div>
           </div>
 
+          <div
+            class="scene-loader"
+            :class="{ 'is-hidden': sceneReady }"
+            aria-hidden="true"
+          >
+            <span
+              v-for="(card, index) in cards"
+              :key="card.id"
+              :class="`loader-card loader-card-${index + 1}`"
+              :style="{ '--loader-color': card.hex }"
+            />
+          </div>
+
           <ClientOnly>
             <CardArena
               ref="arena"
+              :class="{ 'scene-is-ready': sceneReady }"
               :cards="cards"
               :initial-order="order"
               :is-shuffling="isShuffling"
               @request-shuffle="shuffleTeams"
               @ready="handleArenaReady"
             />
-            <template #fallback>
-              <div class="canvas-fallback" aria-hidden="true">
-                <span v-for="card in cards" :key="card.id" :style="{ '--card': card.hex }" />
-              </div>
-            </template>
           </ClientOnly>
 
           <div class="versus-divider" aria-hidden="true">
@@ -189,6 +198,7 @@ const isShuffling = ref(false);
 const drawCount = ref(0);
 const announcement = ref("Ready to shuffle teams.");
 const hasAutoShuffled = ref(false);
+const sceneReady = ref(false);
 
 const cardById = new Map(cards.map((card) => [card.id, card]));
 const orderedCards = computed(() =>
@@ -231,7 +241,8 @@ async function shuffleTeams() {
 function handleArenaReady() {
   if (hasAutoShuffled.value) return;
   hasAutoShuffled.value = true;
-  window.setTimeout(() => shuffleTeams(), 320);
+  sceneReady.value = true;
+  window.setTimeout(() => shuffleTeams(), 520);
 }
 
 function handleKeydown(event: KeyboardEvent) {

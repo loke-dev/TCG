@@ -84,6 +84,9 @@ let targetPointerX = 0;
 let targetPointerY = 0;
 let reducedMotion = false;
 let isVisible = true;
+let baseCameraZ = 10.2;
+let shuffleEnergy = 0;
+let shuffleHalo: THREE.Mesh<THREE.RingGeometry, THREE.MeshBasicMaterial>;
 const objects = new Map<string, CardObject>();
 const textures: THREE.Texture[] = [];
 const materials: THREE.Material[] = [];
@@ -249,7 +252,8 @@ function layoutCards(order = activeOrder.value) {
   const width = host.value.clientWidth;
   const slots = slotPositions(width);
   deck.scale.setScalar(width < 700 ? 0.78 : width < 980 ? 0.87 : 1);
-  camera.position.z = width < 700 ? 10.8 : 10.2;
+  baseCameraZ = width < 700 ? 10.8 : 10.2;
+  camera.position.z = baseCameraZ;
 
   order.forEach((id, index) => {
     const card = objects.get(id);
@@ -269,10 +273,14 @@ function resize() {
   layoutCards();
 }
 
-function easeInOutCubic(value: number) {
+function easeInOutQuint(value: number) {
   return value < 0.5
-    ? 4 * value * value * value
-    : 1 - Math.pow(-2 * value + 2, 3) / 2;
+    ? 16 * value * value * value * value * value
+    : 1 - Math.pow(-2 * value + 2, 5) / 2;
+}
+
+function easeOutCubic(value: number) {
+  return 1 - Math.pow(1 - value, 3);
 }
 
 function animate(now: number) {
@@ -284,9 +292,11 @@ function animate(now: number) {
   pointerY += (targetPointerY - pointerY) * 0.045;
   camera.position.x = pointerX * 0.38;
   camera.position.y = -pointerY * 0.24;
+  camera.position.z = baseCameraZ - shuffleEnergy * 0.55;
   camera.lookAt(0, 0, 0);
 
   let activeAnimations = 0;
+  let nextShuffleEnergy = 0;
 
   objects.forEach((card) => {
     const floatIndex = card.group.userData.floatIndex as number;
@@ -298,15 +308,20 @@ function animate(now: number) {
         activeAnimations += 1;
       } else if (rawProgress < 1) {
         activeAnimations += 1;
-        const progress = easeInOutCubic(Math.max(0, rawProgress));
+        const linearProgress = Math.max(0, rawProgress);
+        const progress = easeInOutQuint(linearProgress);
+        const lift = Math.sin(linearProgress * Math.PI);
+        nextShuffleEnergy = Math.max(nextShuffleEnergy, lift);
         card.group.position.copy(animation.curve.getPoint(progress));
-        card.group.position.z += Math.sin(progress * Math.PI) * 2.35;
-        card.group.rotation.x = card.homeRotation.x + Math.sin(progress * Math.PI * 2) * 0.34;
-        card.group.rotation.y = progress * Math.PI * 2 * animation.turns;
-        card.group.rotation.z = card.homeRotation.z + Math.sin(progress * Math.PI * 3) * 0.24;
+        card.group.position.z += lift * 2.7;
+        card.group.rotation.x = card.homeRotation.x + Math.sin(linearProgress * Math.PI * 2) * 0.42;
+        card.group.rotation.y = easeOutCubic(linearProgress) * Math.PI * 2 * animation.turns;
+        card.group.rotation.z = card.homeRotation.z + Math.sin(linearProgress * Math.PI * 3) * 0.3;
+        card.group.scale.setScalar(1 + lift * 0.075);
       } else {
         card.group.position.copy(card.target);
         card.group.rotation.copy(card.homeRotation);
+        card.group.scale.setScalar(1);
         card.shuffle = undefined;
       }
     } else if (!reducedMotion) {
@@ -315,6 +330,14 @@ function animate(now: number) {
       card.group.rotation.z = card.homeRotation.z + Math.cos(elapsed * 0.4 + floatIndex) * 0.012;
     }
   });
+
+  shuffleEnergy += (nextShuffleEnergy - shuffleEnergy) * 0.14;
+  deck.rotation.z = Math.sin(elapsed * 5.2) * shuffleEnergy * 0.024;
+  if (shuffleHalo) {
+    shuffleHalo.material.opacity = shuffleEnergy * 0.36;
+    shuffleHalo.rotation.z = elapsed * 0.7;
+    shuffleHalo.scale.setScalar(0.82 + shuffleEnergy * 1.15);
+  }
 
   const particles = scene.getObjectByName("particles");
   if (particles && !reducedMotion) particles.rotation.z = elapsed * 0.006;
@@ -361,14 +384,25 @@ function playShuffle(nextOrder: string[]) {
     card.target.copy(slots[index]);
     const start = card.group.position.clone();
     const direction = index % 2 === 0 ? 1 : -1;
-    const midOne = new THREE.Vector3(direction * (1.35 + index * 0.16), 2.3 - index * 0.8, 0.8);
-    const midTwo = new THREE.Vector3(-direction * 1.15, -2 + index * 0.7, 1.2);
+    const lane = index < 2 ? 1 : -1;
+    const gather = new THREE.Vector3(direction * 0.42, lane * 0.28, 1.1 + index * 0.08);
+    const orbit = new THREE.Vector3(
+      -direction * (2.45 + index * 0.12),
+      lane * (1.65 + (index % 2) * 0.35),
+      1.6,
+    );
+    const settle = card.target.clone().lerp(new THREE.Vector3(0, 0, 0.5), 0.16);
+    const curve = new THREE.CatmullRomCurve3(
+      [start, gather, orbit, settle, card.target.clone()],
+      false,
+      "centripetal",
+    );
     card.shuffle = {
-      curve: new THREE.CatmullRomCurve3([start, midOne, midTwo, card.target.clone()]),
+      curve,
       startedAt: now,
-      delay: index * 0.075,
-      duration: 1.48,
-      turns: 1 + (index % 2) * 0.5,
+      delay: index * 0.065,
+      duration: 1.82,
+      turns: 1.25 + (index % 2) * 0.5,
     };
   });
 
@@ -416,6 +450,21 @@ onMounted(() => {
     coolLight.position.set(5, 2, 2);
     scene.add(coolLight);
 
+    const haloGeometry = new THREE.RingGeometry(0.95, 1.02, 96);
+    geometries.push(haloGeometry);
+    const haloMaterial = new THREE.MeshBasicMaterial({
+      color: 0xe8e4ff,
+      transparent: true,
+      opacity: 0,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      side: THREE.DoubleSide,
+    });
+    materials.push(haloMaterial);
+    shuffleHalo = new THREE.Mesh(haloGeometry, haloMaterial);
+    shuffleHalo.position.z = -0.35;
+    scene.add(shuffleHalo);
+
     props.cards.forEach(makeCard);
     makeParticles();
     layoutCards();
@@ -423,8 +472,10 @@ onMounted(() => {
     resizeObserver.observe(host.value as HTMLElement);
     document.addEventListener("visibilitychange", handleVisibility);
     startTime = performance.now();
-    animationFrame = requestAnimationFrame(animate);
-    requestAnimationFrame(() => emit("ready"));
+    animationFrame = requestAnimationFrame((now) => {
+      animate(now);
+      requestAnimationFrame(() => emit("ready"));
+    });
   } catch (error) {
     console.warn("WebGL scene unavailable", error);
     webglFailed.value = true;
@@ -463,6 +514,13 @@ defineExpose({ playShuffle });
   cursor: grab;
   outline: none;
   touch-action: manipulation;
+  opacity: 0;
+  transition: opacity 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.card-arena.scene-is-ready,
+.card-arena.is-fallback {
+  opacity: 1;
 }
 
 .card-arena:active {
