@@ -40,10 +40,8 @@ type CardObject = {
   group: THREE.Group;
   target: THREE.Vector3;
   homeRotation: THREE.Euler;
-  settledAt?: number;
   shuffle?: {
     curve: THREE.CatmullRomCurve3;
-    startRotation: THREE.Euler;
     startedAt: number;
     delay: number;
     duration: number;
@@ -94,9 +92,6 @@ const objects = new Map<string, CardObject>();
 const textures: THREE.Texture[] = [];
 const materials: THREE.Material[] = [];
 const geometries: THREE.BufferGeometry[] = [];
-const cardWidth = 2.05;
-const cardHeight = 3.05;
-const restingRotation = 0.07;
 
 function makeFaceTexture(card: CardData) {
   const surface = document.createElement("canvas");
@@ -142,7 +137,7 @@ function makeCard(card: CardData, index: number) {
   group.name = card.id;
   group.userData.floatIndex = index;
 
-  const bodyGeometry = new RoundedBoxGeometry(cardWidth, cardHeight, 0.2, 8, 0.16);
+  const bodyGeometry = new RoundedBoxGeometry(2.05, 3.05, 0.2, 8, 0.16);
   geometries.push(bodyGeometry);
   const bodyMaterial = new THREE.MeshPhysicalMaterial({
     color: new THREE.Color(card.hex),
@@ -235,88 +230,31 @@ function makeParticles() {
   scene.add(particles);
 }
 
-function cardLayout() {
-  if (!host.value) {
-    return {
-      slots: Array.from({ length: 4 }, () => new THREE.Vector3()),
-      scale: 0.8,
-    };
+function slotPositions(width: number) {
+  if (width < 700) {
+    return [
+      new THREE.Vector3(-1.2, 1.58, 0),
+      new THREE.Vector3(1.2, 1.58, -0.15),
+      new THREE.Vector3(-1.2, -1.58, -0.15),
+      new THREE.Vector3(1.2, -1.58, 0),
+    ];
   }
 
-  const hostBounds = host.value.getBoundingClientRect();
-  const width = Math.max(hostBounds.width, 1);
-  const height = Math.max(hostBounds.height, 1);
-  const zones = Array.from(
-    host.value.parentElement?.querySelectorAll<HTMLElement>(".team-zone") ?? [],
-  ).slice(0, 2);
-  const zoneBounds = zones.map((zone) => zone.getBoundingClientRect());
-  const stacked = zoneBounds.length === 2
-    ? Math.abs(zoneBounds[0].top - zoneBounds[1].top) > Math.abs(zoneBounds[0].left - zoneBounds[1].left)
-    : width < 760;
-
-  baseCameraZ = stacked ? 10.8 : 10.2;
-  const verticalFov = THREE.MathUtils.degToRad(camera.fov);
-  const worldHeight = 2 * Math.tan(verticalFov / 2) * baseCameraZ;
-  const worldPerPixel = worldHeight / height;
-  const projectedCardWidth = Math.abs(cardWidth * Math.cos(restingRotation))
-    + Math.abs(cardHeight * Math.sin(restingRotation));
-  const projectedCardHeight = Math.abs(cardHeight * Math.cos(restingRotation))
-    + Math.abs(cardWidth * Math.sin(restingRotation));
-  const fallbackBounds = stacked
-    ? [
-        { left: hostBounds.left + 14, top: hostBounds.top + 14, width: width - 28, height: (height - 100) / 2 },
-        { left: hostBounds.left + 14, top: hostBounds.top + (height + 72) / 2, width: width - 28, height: (height - 100) / 2 },
-      ]
-    : [
-        { left: hostBounds.left + 22, top: hostBounds.top + 22, width: (width - 118) / 2, height: height - 44 },
-        { left: hostBounds.left + (width + 74) / 2, top: hostBounds.top + 22, width: (width - 118) / 2, height: height - 44 },
-      ];
-  const layoutBounds = zoneBounds.length === 2 ? zoneBounds : fallbackBounds;
-  const slots: THREE.Vector3[] = [];
-  let scale = 1;
-
-  layoutBounds.forEach((bounds) => {
-    const sidePadding = THREE.MathUtils.clamp(bounds.width * 0.055, 16, 30);
-    const topPadding = THREE.MathUtils.clamp(bounds.height * 0.13, 44, 64);
-    const bottomPadding = THREE.MathUtils.clamp(bounds.height * 0.055, 16, 28);
-    const cardGap = THREE.MathUtils.clamp(bounds.width * 0.035, 12, 24);
-    const availableWidth = Math.max(bounds.width - sidePadding * 2, 1);
-    const availableHeight = Math.max(bounds.height - topPadding - bottomPadding, 1);
-    const widthScale = ((availableWidth - cardGap) * worldPerPixel) / (projectedCardWidth * 2);
-    const heightScale = (availableHeight * worldPerPixel) / projectedCardHeight;
-    scale = Math.min(scale, widthScale, heightScale);
-  });
-
-  scale = THREE.MathUtils.clamp(scale, 0.34, 1);
-  layoutBounds.forEach((bounds) => {
-    const topPadding = THREE.MathUtils.clamp(bounds.height * 0.13, 44, 64);
-    const bottomPadding = THREE.MathUtils.clamp(bounds.height * 0.055, 16, 28);
-    const cardGap = THREE.MathUtils.clamp(bounds.width * 0.035, 12, 24);
-    const cardPixelWidth = (projectedCardWidth * scale) / worldPerPixel;
-    const pairWidth = cardPixelWidth * 2 + cardGap;
-    const pairLeft = bounds.left - hostBounds.left + (bounds.width - pairWidth) / 2;
-    const centerY = bounds.top - hostBounds.top
-      + topPadding
-      + (bounds.height - topPadding - bottomPadding) / 2;
-
-    [cardPixelWidth / 2, cardPixelWidth * 1.5 + cardGap].forEach((offset) => {
-      const centerX = pairLeft + offset;
-      slots.push(new THREE.Vector3(
-        (centerX / width - 0.5) * worldHeight * camera.aspect,
-        (0.5 - centerY / height) * worldHeight,
-        0,
-      ));
-    });
-  });
-
-  return { slots, scale };
+  return [
+    new THREE.Vector3(-3.55, 0.18, -0.1),
+    new THREE.Vector3(-1.25, -0.12, 0.12),
+    new THREE.Vector3(1.25, -0.12, 0.12),
+    new THREE.Vector3(3.55, 0.18, -0.1),
+  ];
 }
 
 function layoutCards(order = activeOrder.value) {
   if (!host.value || !camera) return;
-  const { slots, scale } = cardLayout();
-  deck.scale.setScalar(1);
-  restingCardScale = scale;
+  const width = host.value.clientWidth;
+  const slots = slotPositions(width);
+  deck.scale.setScalar(width < 700 ? 0.78 : width < 980 ? 0.87 : 1);
+  restingCardScale = width < 700 ? 1 : width < 980 ? 0.92 : 0.88;
+  baseCameraZ = width < 700 ? 10.8 : 10.2;
   camera.position.z = baseCameraZ;
 
   order.forEach((id, index) => {
@@ -350,11 +288,6 @@ function easeOutCubic(value: number) {
   return 1 - Math.pow(1 - value, 3);
 }
 
-function smoothstep(value: number) {
-  const clamped = THREE.MathUtils.clamp(value, 0, 1);
-  return clamped * clamped * (3 - 2 * clamped);
-}
-
 function animate(now: number) {
   animationFrame = requestAnimationFrame(animate);
   if (!isVisible || !renderer) return;
@@ -362,8 +295,8 @@ function animate(now: number) {
   const elapsed = (now - startTime) / 1000;
   pointerX += (targetPointerX - pointerX) * 0.045;
   pointerY += (targetPointerY - pointerY) * 0.045;
-  camera.position.x = pointerX * 0.14;
-  camera.position.y = -pointerY * 0.08;
+  camera.position.x = pointerX * 0.38;
+  camera.position.y = -pointerY * 0.24;
   camera.position.z = baseCameraZ - shuffleEnergy * 0.55;
   camera.lookAt(0, 0, 0);
 
@@ -382,34 +315,24 @@ function animate(now: number) {
         activeAnimations += 1;
         const linearProgress = Math.max(0, rawProgress);
         const progress = easeInOutQuint(linearProgress);
-        const lift = Math.pow(Math.sin(linearProgress * Math.PI), 2);
-        const rotationAccent = Math.sin(linearProgress * Math.PI * 2) * lift;
+        const lift = Math.sin(linearProgress * Math.PI);
         nextShuffleEnergy = Math.max(nextShuffleEnergy, lift);
         card.group.position.copy(animation.curve.getPoint(progress));
         card.group.position.z += lift * 2.7;
-        card.group.rotation.x = THREE.MathUtils.lerp(animation.startRotation.x, card.homeRotation.x, progress)
-          + rotationAccent * 0.42;
-        card.group.rotation.y = THREE.MathUtils.lerp(animation.startRotation.y, 0, progress)
-          + easeOutCubic(linearProgress) * Math.PI * 2 * animation.turns;
-        card.group.rotation.z = THREE.MathUtils.lerp(animation.startRotation.z, card.homeRotation.z, progress)
-          + Math.sin(linearProgress * Math.PI * 3) * lift * 0.3;
+        card.group.rotation.x = card.homeRotation.x + Math.sin(linearProgress * Math.PI * 2) * 0.42;
+        card.group.rotation.y = easeOutCubic(linearProgress) * Math.PI * 2 * animation.turns;
+        card.group.rotation.z = card.homeRotation.z + Math.sin(linearProgress * Math.PI * 3) * 0.3;
         card.group.scale.setScalar(restingCardScale * (1 + lift * 0.075));
       } else {
         card.group.position.copy(card.target);
         card.group.rotation.copy(card.homeRotation);
         card.group.scale.setScalar(restingCardScale);
         card.shuffle = undefined;
-        card.settledAt = elapsed;
       }
     } else if (!reducedMotion) {
-      const idleBlend = card.settledAt == null ? 1 : smoothstep((elapsed - card.settledAt) / 0.55);
-      card.group.position.y = card.target.y
-        + Math.sin(elapsed * 0.72 + floatIndex * 1.4) * 0.055 * idleBlend;
-      card.group.rotation.x = card.homeRotation.x
-        + Math.sin(elapsed * 0.48 + floatIndex) * 0.018 * idleBlend;
-      card.group.rotation.z = card.homeRotation.z
-        + Math.cos(elapsed * 0.4 + floatIndex) * 0.012 * idleBlend;
-      if (idleBlend === 1) card.settledAt = undefined;
+      card.group.position.y = card.target.y + Math.sin(elapsed * 0.72 + floatIndex * 1.4) * 0.055;
+      card.group.rotation.x = card.homeRotation.x + Math.sin(elapsed * 0.48 + floatIndex) * 0.018;
+      card.group.rotation.z = card.homeRotation.z + Math.cos(elapsed * 0.4 + floatIndex) * 0.012;
     }
   });
 
@@ -457,8 +380,7 @@ function playShuffle(nextOrder: string[]) {
     return new Promise<void>((resolve) => window.setTimeout(resolve, 260));
   }
 
-  const { slots, scale } = cardLayout();
-  restingCardScale = scale;
+  const slots = slotPositions(host.value?.clientWidth || 900);
   const now = (performance.now() - startTime) / 1000;
 
   nextOrder.forEach((id, index) => {
@@ -482,11 +404,10 @@ function playShuffle(nextOrder: string[]) {
     );
     card.shuffle = {
       curve,
-      startRotation: card.group.rotation.clone(),
       startedAt: now,
       delay: index * 0.065,
-      duration: 2.05,
-      turns: 1 + (index % 2),
+      duration: 1.82,
+      turns: 1.25 + (index % 2) * 0.5,
     };
   });
 
