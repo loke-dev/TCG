@@ -13,7 +13,7 @@
     <div class="ambient ambient-two" aria-hidden="true" />
 
     <header class="topbar">
-      <a class="brand" href="/" aria-label="TCG home">
+      <button class="brand" type="button" aria-label="Shuffle TCG deck" @click="shuffleTeams">
         <span class="brand-mark" aria-hidden="true">
           <i /><i /><i /><i />
         </span>
@@ -21,7 +21,7 @@
           <strong>TCG</strong>
           <small>Team Color Generator</small>
         </span>
-      </a>
+      </button>
 
       <div class="mode-pill">
         <span class="status-dot" :class="{ busy: isShuffling }" />
@@ -233,7 +233,6 @@ async function shuffleTeams() {
 
   order.value = shuffled;
   drawCount.value += 1;
-  localStorage.setItem("tcg-color-order", JSON.stringify(shuffled));
   announcement.value = `Team one: ${teamOne.value.map((card) => card.label).join(" and ")}. Team two: ${teamTwo.value.map((card) => card.label).join(" and ")}.`;
   isShuffling.value = false;
 }
@@ -246,6 +245,15 @@ function handleArenaReady() {
 }
 
 function handleKeydown(event: KeyboardEvent) {
+  const isRefreshShortcut = event.code === "F5"
+    || ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "r");
+
+  if (isRefreshShortcut) {
+    event.preventDefault();
+    shuffleTeams();
+    return;
+  }
+
   if (event.code === "Space" && event.target === document.body) {
     event.preventDefault();
     shuffleTeams();
@@ -253,23 +261,6 @@ function handleKeydown(event: KeyboardEvent) {
 }
 
 onMounted(() => {
-  const storedOrder = localStorage.getItem("tcg-color-order");
-
-  if (storedOrder) {
-    try {
-      const parsed = JSON.parse(storedOrder);
-      if (
-        Array.isArray(parsed) &&
-        parsed.length === cards.length &&
-        parsed.every((id) => cardById.has(id))
-      ) {
-        order.value = parsed;
-      }
-    } catch {
-      localStorage.removeItem("tcg-color-order");
-    }
-  }
-
   window.addEventListener("keydown", handleKeydown);
 });
 

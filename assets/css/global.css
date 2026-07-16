@@ -1,4 +1,9 @@
-@import url("https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap");
+@import "@fontsource/dm-mono/latin-400.css";
+@import "@fontsource/dm-mono/latin-500.css";
+@import "@fontsource/space-grotesk/latin-400.css";
+@import "@fontsource/space-grotesk/latin-500.css";
+@import "@fontsource/space-grotesk/latin-600.css";
+@import "@fontsource/space-grotesk/latin-700.css";
 
 :root {
   color-scheme: dark;
@@ -21,6 +26,7 @@
 
 html {
   background: var(--ink);
+  overscroll-behavior-y: none;
   scroll-behavior: smooth;
 }
 
@@ -42,6 +48,14 @@ body {
 button,
 a {
   font: inherit;
+}
+
+button.brand {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
 }
 
 button:focus-visible,
@@ -442,9 +456,9 @@ h1 em {
 
 .loader-card {
   position: absolute;
-  top: 26%;
-  width: 15.5%;
-  height: 55%;
+  top: 50%;
+  width: clamp(92px, 15.5%, 205px);
+  aspect-ratio: 2.05 / 3.05;
   border: 1px solid color-mix(in srgb, var(--loader-color) 58%, white);
   border-radius: 16px;
   background:
@@ -464,10 +478,10 @@ h1 em {
   border-radius: 8px;
 }
 
-.loader-card-1 { left: 8.5%; transform: rotate(-3deg); }
-.loader-card-2 { left: 30%; transform: rotate(2deg); }
-.loader-card-3 { right: 30%; transform: rotate(-2deg); }
-.loader-card-4 { right: 8.5%; transform: rotate(3deg); }
+.loader-card-1 { left: 7%; transform: translateY(-50%) rotate(-3deg); }
+.loader-card-2 { left: 26%; transform: translateY(-50%) rotate(2deg); }
+.loader-card-3 { right: 26%; transform: translateY(-50%) rotate(-2deg); }
+.loader-card-4 { right: 7%; transform: translateY(-50%) rotate(3deg); }
 
 .draw-actions {
   gap: 22px;
@@ -753,14 +767,15 @@ footer a:hover {
   }
 
   .loader-card {
-    width: 35%;
-    height: 32%;
+    top: auto;
+    width: clamp(108px, 18vw, 126px);
+    aspect-ratio: 2.05 / 3.05;
   }
 
-  .loader-card-1 { top: 11%; left: 10%; }
-  .loader-card-2 { top: 11%; left: auto; right: 10%; }
-  .loader-card-3 { top: 57%; left: 10%; right: auto; }
-  .loader-card-4 { top: 57%; left: auto; right: 10%; }
+  .loader-card-1 { top: 8%; left: 27%; transform: translateX(-50%) rotate(-3deg); }
+  .loader-card-2 { top: 8%; left: 73%; right: auto; transform: translateX(-50%) rotate(2deg); }
+  .loader-card-3 { top: 57%; left: 27%; right: auto; transform: translateX(-50%) rotate(-2deg); }
+  .loader-card-4 { top: 57%; left: 73%; right: auto; transform: translateX(-50%) rotate(3deg); }
 
   .team-zones {
     inset: 14px;
