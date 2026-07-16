@@ -30,16 +30,7 @@
     </header>
 
     <main>
-      <section class="hero-copy" aria-labelledby="page-title">
-        <p class="eyebrow">Fast teams. Zero debate.</p>
-        <h1 id="page-title">Shuffle the <em>room.</em></h1>
-        <p class="intro">
-          Four colors enter. Two teams emerge. Tap the deck and let the table
-          decide your next match.
-        </p>
-      </section>
-
-      <section class="draw-panel" aria-labelledby="draw-heading">
+      <section class="draw-panel draw-panel-first" aria-labelledby="draw-heading">
         <div class="panel-meta">
           <div>
             <p class="panel-kicker">Live draw</p>
@@ -51,9 +42,15 @@
         </div>
 
         <div class="arena-shell">
-          <div class="team-labels" aria-hidden="true">
-            <span>Team one</span>
-            <span>Team two</span>
+          <div class="team-zones" aria-hidden="true">
+            <div class="team-zone team-zone-one">
+              <span class="zone-number">01</span>
+              <strong>Team one</strong>
+            </div>
+            <div class="team-zone team-zone-two">
+              <span class="zone-number">02</span>
+              <strong>Team two</strong>
+            </div>
           </div>
 
           <ClientOnly>
@@ -63,6 +60,7 @@
               :initial-order="order"
               :is-shuffling="isShuffling"
               @request-shuffle="shuffleTeams"
+              @ready="handleArenaReady"
             />
             <template #fallback>
               <div class="canvas-fallback" aria-hidden="true">
@@ -71,7 +69,9 @@
             </template>
           </ClientOnly>
 
-          <div class="versus-badge" aria-hidden="true">VS</div>
+          <div class="versus-divider" aria-hidden="true">
+            <span>VS</span>
+          </div>
           <p class="scene-caption">WebGL glass deck</p>
         </div>
 
@@ -92,6 +92,15 @@
             <span>draws this session</span>
           </div>
         </div>
+      </section>
+
+      <section class="hero-copy" aria-labelledby="page-title">
+        <p class="eyebrow">Fast teams. Zero debate.</p>
+        <h1 id="page-title">Shuffle the <em>room.</em></h1>
+        <p class="intro">
+          Four colors enter. Two teams emerge. Tap the deck and let the table
+          decide your next match.
+        </p>
       </section>
 
       <section class="result-section" aria-labelledby="result-heading">
@@ -179,6 +188,7 @@ const order = ref(cards.map((card) => card.id));
 const isShuffling = ref(false);
 const drawCount = ref(0);
 const announcement = ref("Ready to shuffle teams.");
+const hasAutoShuffled = ref(false);
 
 const cardById = new Map(cards.map((card) => [card.id, card]));
 const orderedCards = computed(() =>
@@ -216,6 +226,12 @@ async function shuffleTeams() {
   localStorage.setItem("tcg-color-order", JSON.stringify(shuffled));
   announcement.value = `Team one: ${teamOne.value.map((card) => card.label).join(" and ")}. Team two: ${teamTwo.value.map((card) => card.label).join(" and ")}.`;
   isShuffling.value = false;
+}
+
+function handleArenaReady() {
+  if (hasAutoShuffled.value) return;
+  hasAutoShuffled.value = true;
+  window.setTimeout(() => shuffleTeams(), 320);
 }
 
 function handleKeydown(event: KeyboardEvent) {

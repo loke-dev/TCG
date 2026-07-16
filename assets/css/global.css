@@ -177,7 +177,7 @@ main {
 
 .hero-copy {
   max-width: 900px;
-  padding: clamp(72px, 10vw, 148px) 0 clamp(52px, 7vw, 88px);
+  padding: clamp(88px, 11vw, 160px) 0 clamp(52px, 7vw, 88px);
 }
 
 .eyebrow,
@@ -236,6 +236,10 @@ h1 em {
   box-shadow: 0 36px 100px rgba(0, 0, 0, 0.36);
 }
 
+.draw-panel-first {
+  margin-top: clamp(22px, 3vw, 42px);
+}
+
 .panel-meta,
 .draw-actions,
 .section-heading {
@@ -292,8 +296,7 @@ h1 em {
     linear-gradient(180deg, rgba(255, 255, 255, 0.018), transparent);
 }
 
-.arena-shell::before,
-.arena-shell::after {
+.arena-shell::before {
   content: "";
   position: absolute;
   z-index: 0;
@@ -308,53 +311,110 @@ h1 em {
   mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
 }
 
-.arena-shell::after {
-  left: 50%;
-  top: 12%;
-  bottom: 12%;
-  width: 1px;
-  background: linear-gradient(transparent, rgba(255, 255, 255, 0.16), transparent);
-}
-
-.team-labels {
+.team-zones {
   position: absolute;
   z-index: 2;
-  top: 33px;
-  left: 6%;
-  right: 6%;
-  display: flex;
-  justify-content: space-between;
+  inset: 22px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 74px;
   pointer-events: none;
 }
 
-.team-labels span,
+.team-zone {
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 22%);
+}
+
+.team-zone::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  opacity: 0.38;
+}
+
+.team-zone-one::before {
+  border-top: 2px solid var(--purple);
+}
+
+.team-zone-two::before {
+  border-top: 2px solid var(--blue);
+}
+
+.team-zone strong,
+.zone-number,
 .scene-caption {
-  color: rgba(255, 255, 255, 0.42);
   font-family: var(--mono);
   font-size: 0.61rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
-.versus-badge {
+.team-zone strong {
+  position: absolute;
+  top: 18px;
+  left: 20px;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.68rem;
+}
+
+.zone-number {
+  position: absolute;
+  top: 18px;
+  right: 20px;
+  color: rgba(255, 255, 255, 0.28);
+}
+
+.versus-divider {
   position: absolute;
   z-index: 3;
   left: 50%;
-  top: 50%;
+  top: 5%;
+  bottom: 5%;
   display: grid;
-  width: 54px;
-  height: 54px;
+  width: 74px;
   place-items: center;
-  transform: translate(-50%, -50%);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 50%;
-  background: rgba(8, 9, 13, 0.64);
-  box-shadow: 0 0 42px rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(12px);
-  font-family: var(--mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.08em;
+  transform: translateX(-50%);
   pointer-events: none;
+}
+
+.versus-divider::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  border-radius: 3px;
+  background: linear-gradient(
+    transparent,
+    rgba(255, 255, 255, 0.22) 14%,
+    rgba(255, 255, 255, 0.72) 45%,
+    rgba(255, 255, 255, 0.72) 55%,
+    rgba(255, 255, 255, 0.22) 86%,
+    transparent
+  );
+  box-shadow: 0 0 24px rgba(255, 255, 255, 0.16);
+}
+
+.versus-divider span {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  width: 62px;
+  height: 62px;
+  place-items: center;
+  border: 2px solid rgba(255, 255, 255, 0.66);
+  border-radius: 50%;
+  background: rgba(8, 9, 13, 0.9);
+  box-shadow: 0 0 0 8px rgba(8, 9, 13, 0.72), 0 0 46px rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(16px);
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
 }
 
 .scene-caption {
@@ -363,6 +423,7 @@ h1 em {
   right: 26px;
   bottom: 22px;
   margin: 0;
+  color: rgba(255, 255, 255, 0.42);
   pointer-events: none;
 }
 
@@ -646,7 +707,7 @@ footer a:hover {
   }
 
   .hero-copy {
-    padding-top: 76px;
+    padding-top: 92px;
   }
 
   h1 {
@@ -663,33 +724,63 @@ footer a:hover {
     min-height: 610px;
   }
 
-  .arena-shell::after {
-    left: 12%;
-    right: 12%;
+  .team-zones {
+    inset: 14px;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    gap: 72px;
+  }
+
+  .team-zone-one::before,
+  .team-zone-two::before {
+    border-top: 0;
+  }
+
+  .team-zone-one::before { border-left: 2px solid var(--purple); }
+  .team-zone-two::before { border-left: 2px solid var(--blue); }
+
+  .team-zone strong {
+    top: 14px;
+    left: 16px;
+  }
+
+  .zone-number {
+    top: 14px;
+    right: 16px;
+  }
+
+  .versus-divider {
     top: 50%;
     bottom: auto;
+    left: 6%;
+    right: 6%;
     width: auto;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.16), transparent);
+    height: 72px;
+    transform: translateY(-50%);
   }
 
-  .team-labels {
-    inset: 0;
-    display: block;
+  .versus-divider::before {
+    top: 50%;
+    bottom: auto;
+    left: 0;
+    right: 0;
+    width: auto;
+    height: 3px;
+    transform: translateY(-50%);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.22) 14%,
+      rgba(255, 255, 255, 0.72) 45%,
+      rgba(255, 255, 255, 0.72) 55%,
+      rgba(255, 255, 255, 0.22) 86%,
+      transparent
+    );
   }
 
-  .team-labels span {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-
-  .team-labels span:first-child { top: 18px; }
-  .team-labels span:last-child { bottom: 18px; }
-
-  .versus-badge {
-    width: 46px;
-    height: 46px;
+  .versus-divider span {
+    width: 56px;
+    height: 56px;
   }
 
   .scene-caption {

@@ -55,7 +55,10 @@ const props = defineProps<{
   isShuffling: boolean;
 }>();
 
-defineEmits<{ (event: "request-shuffle"): void }>();
+const emit = defineEmits<{
+  (event: "request-shuffle"): void;
+  (event: "ready"): void;
+}>();
 
 const host = ref<HTMLElement | null>(null);
 const canvas = ref<HTMLCanvasElement | null>(null);
@@ -421,9 +424,11 @@ onMounted(() => {
     document.addEventListener("visibilitychange", handleVisibility);
     startTime = performance.now();
     animationFrame = requestAnimationFrame(animate);
+    requestAnimationFrame(() => emit("ready"));
   } catch (error) {
     console.warn("WebGL scene unavailable", error);
     webglFailed.value = true;
+    emit("ready");
   }
 });
 
