@@ -1,135 +1,254 @@
 <template>
-  <Head>
-    <Title>Team Color Generator</Title>
-    <Meta
-      name="description"
-      content="Generate team colors for playstation games."
-    />
-  </Head>
-  <div class="app-background">
-    <BackgroundEffects ref="backgroundEffects" />
-    <main @click="handleClick" class="container">
-      <AppHeader />
-      <MainContent :colors="colors" :is-shuffling="isShuffling" />
-      <AppFooter />
+  <div class="site-shell">
+    <Head>
+      <Title>TCG — Team Color Generator</Title>
+      <Meta
+        name="description"
+        content="Shuffle four iconic colors into two teams with a tactile 3D draw."
+      />
+      <Meta name="theme-color" content="#090a0f" />
+    </Head>
+
+    <div class="ambient ambient-one" aria-hidden="true" />
+    <div class="ambient ambient-two" aria-hidden="true" />
+
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="TCG home">
+        <span class="brand-mark" aria-hidden="true">
+          <i /><i /><i /><i />
+        </span>
+        <span>
+          <strong>TCG</strong>
+          <small>Team Color Generator</small>
+        </span>
+      </a>
+
+      <div class="mode-pill">
+        <span class="status-dot" :class="{ busy: isShuffling }" />
+        {{ isShuffling ? "Drawing teams" : "Color draw · 01" }}
+      </div>
+    </header>
+
+    <main>
+      <section class="hero-copy" aria-labelledby="page-title">
+        <p class="eyebrow">Fast teams. Zero debate.</p>
+        <h1 id="page-title">Shuffle the <em>room.</em></h1>
+        <p class="intro">
+          Four colors enter. Two teams emerge. Tap the deck and let the table
+          decide your next match.
+        </p>
+      </section>
+
+      <section class="draw-panel" aria-labelledby="draw-heading">
+        <div class="panel-meta">
+          <div>
+            <p class="panel-kicker">Live draw</p>
+            <h2 id="draw-heading">Color deck</h2>
+          </div>
+          <p class="interaction-hint">
+            <span aria-hidden="true">↗</span> Move to look · Tap to shuffle
+          </p>
+        </div>
+
+        <div class="arena-shell">
+          <div class="team-labels" aria-hidden="true">
+            <span>Team one</span>
+            <span>Team two</span>
+          </div>
+
+          <ClientOnly>
+            <CardArena
+              ref="arena"
+              :cards="cards"
+              :initial-order="order"
+              :is-shuffling="isShuffling"
+              @request-shuffle="shuffleTeams"
+            />
+            <template #fallback>
+              <div class="canvas-fallback" aria-hidden="true">
+                <span v-for="card in cards" :key="card.id" :style="{ '--card': card.hex }" />
+              </div>
+            </template>
+          </ClientOnly>
+
+          <div class="versus-badge" aria-hidden="true">VS</div>
+          <p class="scene-caption">WebGL glass deck</p>
+        </div>
+
+        <div class="draw-actions">
+          <button
+            class="shuffle-button"
+            type="button"
+            :disabled="isShuffling"
+            @click="shuffleTeams"
+          >
+            <span class="button-icon" aria-hidden="true">↝</span>
+            <span>{{ isShuffling ? "Shuffling…" : "Shuffle teams" }}</span>
+            <kbd>Space</kbd>
+          </button>
+
+          <div class="draw-count">
+            <strong>{{ drawCount.toString().padStart(2, "0") }}</strong>
+            <span>draws this session</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="result-section" aria-labelledby="result-heading">
+        <div class="section-heading">
+          <div>
+            <p class="panel-kicker">The match-up</p>
+            <h2 id="result-heading">Teams are set</h2>
+          </div>
+          <p>Best of luck. No rerolls. Probably.</p>
+        </div>
+
+        <div class="teams" aria-live="polite" aria-atomic="true">
+          <article class="team-card">
+            <span class="team-number">01</span>
+            <div>
+              <p>Team one</p>
+              <ul>
+                <li v-for="card in teamOne" :key="card.id">
+                  <i :style="{ background: card.hex }" />{{ card.label }}
+                </li>
+              </ul>
+            </div>
+          </article>
+
+          <article class="team-card">
+            <span class="team-number">02</span>
+            <div>
+              <p>Team two</p>
+              <ul>
+                <li v-for="card in teamTwo" :key="card.id">
+                  <i :style="{ background: card.hex }" />{{ card.label }}
+                </li>
+              </ul>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="coming-next" aria-label="Future game modes">
+        <div class="dice-mark" aria-hidden="true">
+          <i /><i /><i /><i /><i />
+        </div>
+        <div>
+          <p class="panel-kicker">Coming next</p>
+          <h2>Roll the dice</h2>
+          <p>More draw modes, same satisfying physics.</p>
+        </div>
+        <span class="soon-pill">In the lab</span>
+      </section>
     </main>
-    <InfoMessage
-      :show="showInfoMessage"
-      :progress="progress"
-      @close="hideInfoMessage"
-      @pause="pauseCountdown"
-      @resume="resumeCountdown"
-    />
+
+    <footer>
+      <p>Made for the next match.</p>
+      <nav aria-label="Footer navigation">
+        <a href="https://github.com/loke-dev/TCG" rel="noopener" target="_blank">Source</a>
+        <a href="https://loke.dev" rel="noopener" target="_blank">Loke.dev</a>
+      </nav>
+    </footer>
+
+    <p class="sr-only" aria-live="assertive">{{ announcement }}</p>
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted, watch } from "vue";
-import { useColors } from "~/composables/useColors";
-import { useInfoMessage } from "~/composables/useInfoMessage";
-import BackgroundEffects from "~/components/BackgroundEffects.vue";
-import MainContent from "~/components/MainContent.vue";
-import AppHeader from "~/components/AppHeader.vue";
-import AppFooter from "~/components/AppFooter.vue";
-import InfoMessage from "~/components/InfoMessage.vue";
+<script setup lang="ts">
+import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref } from "vue";
 
-useHead({
-  htmlAttrs: {
-    lang: "en",
-  },
-});
+const CardArena = defineAsyncComponent(() => import("~/components/CardArena.vue"));
 
-const { colors, isShuffling, initColors, animate } = useColors();
-const backgroundEffects = ref(null);
+type ColorCard = {
+  id: string;
+  label: string;
+  symbol: string;
+  hex: string;
+};
 
-const {
-  showInfoMessage,
-  hasInteracted,
-  progress,
-  markInteracted,
-  hideInfoMessage,
-  pauseCountdown,
-  resumeCountdown,
-} = useInfoMessage();
+const cards: ColorCard[] = [
+  { id: "yellow", label: "Yellow", symbol: "△", hex: "#f7d84a" },
+  { id: "purple", label: "Purple", symbol: "□", hex: "#9b63f7" },
+  { id: "blue", label: "Blue", symbol: "×", hex: "#3b82f6" },
+  { id: "red", label: "Red", symbol: "○", hex: "#f05b56" },
+];
 
-watch(isShuffling, (newValue) => {
-  if (backgroundEffects.value) {
-    backgroundEffects.value.setShuffling(newValue);
+const arena = ref<{ playShuffle: (order: string[]) => Promise<void> } | null>(null);
+const order = ref(cards.map((card) => card.id));
+const isShuffling = ref(false);
+const drawCount = ref(0);
+const announcement = ref("Ready to shuffle teams.");
+
+const cardById = new Map(cards.map((card) => [card.id, card]));
+const orderedCards = computed(() =>
+  order.value.map((id) => cardById.get(id)).filter(Boolean) as ColorCard[],
+);
+const teamOne = computed(() => orderedCards.value.slice(0, 2));
+const teamTwo = computed(() => orderedCards.value.slice(2, 4));
+
+function nextOrder() {
+  const shuffled = [...order.value];
+
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
   }
-});
+
+  if (shuffled.every((id, index) => id === order.value[index])) {
+    shuffled.push(shuffled.shift() as string);
+  }
+
+  return shuffled;
+}
+
+async function shuffleTeams() {
+  if (isShuffling.value || !arena.value) return;
+
+  isShuffling.value = true;
+  announcement.value = "Shuffling the color deck.";
+  const shuffled = nextOrder();
+
+  await arena.value.playShuffle(shuffled);
+
+  order.value = shuffled;
+  drawCount.value += 1;
+  localStorage.setItem("tcg-color-order", JSON.stringify(shuffled));
+  announcement.value = `Team one: ${teamOne.value.map((card) => card.label).join(" and ")}. Team two: ${teamTwo.value.map((card) => card.label).join(" and ")}.`;
+  isShuffling.value = false;
+}
+
+function handleKeydown(event: KeyboardEvent) {
+  if (event.code === "Space" && event.target === document.body) {
+    event.preventDefault();
+    shuffleTeams();
+  }
+}
 
 onMounted(() => {
-  initColors();
-  // Defer initial animation to avoid blocking initial render
-  requestAnimationFrame(() => {
-    setTimeout(() => {
-      animate(animateParticles);
-    }, 100);
-  });
+  const storedOrder = localStorage.getItem("tcg-color-order");
+
+  if (storedOrder) {
+    try {
+      const parsed = JSON.parse(storedOrder);
+      if (
+        Array.isArray(parsed) &&
+        parsed.length === cards.length &&
+        parsed.every((id) => cardById.has(id))
+      ) {
+        order.value = parsed;
+      }
+    } catch {
+      localStorage.removeItem("tcg-color-order");
+    }
+  }
+
+  window.addEventListener("keydown", handleKeydown);
 });
 
-function handleClick() {
-  markInteracted();
-  animate(animateParticles);
-}
-
-function animateParticles() {
-  if (backgroundEffects.value) {
-    backgroundEffects.value.animateParticles();
-  }
-}
+onBeforeUnmount(() => window.removeEventListener("keydown", handleKeydown));
 </script>
 
 <style>
 @import "~/assets/css/global.css";
-
-.app-background {
-  position: relative;
-  min-height: 100vh;
-  width: 100%;
-  overflow: hidden;
-  display: grid;
-  place-items: center;
-  background: radial-gradient(ellipse at top, #1a1a2e 0%, #0a0a0a 70%);
-}
-
-.container {
-  width: 100%;
-  max-width: 1200px;
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-  min-height: 100vh;
-  padding: 1.5rem;
-  box-sizing: border-box;
-  z-index: 2;
-  gap: 1.5rem;
-}
-
-@media (max-width: 1200px) {
-  .container {
-    padding: 1rem;
-    gap: 1rem;
-  }
-}
-
-@media (max-width: 768px) {
-  .container {
-    padding: 0.5rem;
-    gap: 0.5rem;
-  }
-}
-
-@media (max-width: 500px) {
-  .container {
-    padding: 0.5rem;
-    gap: 0.5rem;
-  }
-}
-
-@media (max-width: 375px) {
-  .container {
-    padding: 0.25rem;
-    gap: 0.25rem;
-  }
-}
 </style>

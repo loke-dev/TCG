@@ -7,6 +7,9 @@ export default defineNuxtConfig({
 
   app: {
     head: {
+      meta: [
+        { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
+      ],
       link: [
         {
           rel: "preconnect",
@@ -25,9 +28,9 @@ export default defineNuxtConfig({
     manifest: {
       name: "Team Color Generator",
       short_name: "TCG",
-      description: "Generate team colors for playstation games.",
-      background_color: "#232323",
-      theme_color: "#131313",
+      description: "Shuffle four iconic colors into two teams with a tactile 3D draw.",
+      background_color: "#08090d",
+      theme_color: "#08090d",
       lang: "en",
       display: "standalone",
       start_url: "/",

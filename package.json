@@ -6,14 +6,21 @@
     "deploy": "pnpm run generate && wrangler pages deploy .output/public --project-name tcg",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "npx nuxi prepare"
+    "postinstall": "nuxi prepare",
+    "typecheck": "nuxt typecheck"
   },
   "devDependencies": {
+    "@types/three": "^0.185.1",
     "@vite-pwa/nuxt": "^0.10.5",
     "nuxt": "^3.13.2",
+    "typescript": "^5.9.3",
+    "vue-tsc": "^3.3.7",
     "wrangler": "^4.0.0"
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "*"
+  },
+  "dependencies": {
+    "three": "^0.185.1"
   }
 }
