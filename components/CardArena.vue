@@ -40,8 +40,10 @@ type CardObject = {
   group: THREE.Group;
   target: THREE.Vector3;
   homeRotation: THREE.Euler;
+  settledAt?: number;
   shuffle?: {
     curve: THREE.CatmullRomCurve3;
+    startRotation: THREE.Euler;
     startedAt: number;
     delay: number;
     duration: number;
@@ -92,6 +94,9 @@ const objects = new Map<string, CardObject>();
 const textures: THREE.Texture[] = [];
 const materials: THREE.Material[] = [];
 const geometries: THREE.BufferGeometry[] = [];
+const cardWidth = 2.05;
+const cardHeight = 3.05;
+const maxRestingRotation = 0.07;
 
 function makeFaceTexture(card: CardData) {
   const surface = document.createElement("canvas");
@@ -137,7 +142,7 @@ function makeCard(card: CardData, index: number) {
   group.name = card.id;
   group.userData.floatIndex = index;
 
-  const bodyGeometry = new RoundedBoxGeometry(2.05, 3.05, 0.2, 8, 0.16);
+  const bodyGeometry = new RoundedBoxGeometry(cardWidth, cardHeight, 0.2, 8, 0.16);
   geometries.push(bodyGeometry);
   const bodyMaterial = new THREE.MeshPhysicalMaterial({
     color: new THREE.Color(card.hex),
@@ -230,31 +235,69 @@ function makeParticles() {
   scene.add(particles);
 }
 
-function slotPositions(width: number) {
-  if (width < 700) {
-    return [
-      new THREE.Vector3(-1.2, 1.58, 0),
-      new THREE.Vector3(1.2, 1.58, -0.15),
-      new THREE.Vector3(-1.2, -1.58, -0.15),
-      new THREE.Vector3(1.2, -1.58, 0),
-    ];
+function cardLayout(width: number, height: number) {
+  const stacked = window.matchMedia("(max-width: 760px)").matches;
+  baseCameraZ = stacked ? 10.8 : 10.2;
+
+  const verticalFov = THREE.MathUtils.degToRad(camera.fov);
+  const worldHeight = 2 * Math.tan(verticalFov / 2) * baseCameraZ;
+  const worldWidth = worldHeight * camera.aspect;
+  const worldPerPixel = worldHeight / height;
+  const projectedWidth = Math.abs(cardWidth * Math.cos(maxRestingRotation))
+    + Math.abs(cardHeight * Math.sin(maxRestingRotation));
+  const projectedHeight = Math.abs(cardHeight * Math.cos(maxRestingRotation))
+    + Math.abs(cardWidth * Math.sin(maxRestingRotation));
+
+  if (stacked) {
+    const zoneWidth = width - 28;
+    const zoneHeight = (height - 28 - 72) / 2;
+    const x = (zoneWidth * 0.23 / width) * worldWidth;
+    const firstCenterY = 14 + zoneHeight / 2;
+    const y = (0.5 - firstCenterY / height) * worldHeight;
+    const scaleForWidth = ((zoneWidth - 44) * worldPerPixel) / (projectedWidth * 2);
+    const scaleForHeight = ((zoneHeight - 60) * worldPerPixel) / projectedHeight;
+
+    return {
+      scale: THREE.MathUtils.clamp(Math.min(scaleForWidth, scaleForHeight), 0.5, 0.72),
+      slots: [
+        new THREE.Vector3(-x, y, 0),
+        new THREE.Vector3(x, y, -0.15),
+        new THREE.Vector3(-x, -y, -0.15),
+        new THREE.Vector3(x, -y, 0),
+      ],
+    };
   }
 
-  return [
-    new THREE.Vector3(-3.55, 0.18, -0.1),
-    new THREE.Vector3(-1.25, -0.12, 0.12),
-    new THREE.Vector3(1.25, -0.12, 0.12),
-    new THREE.Vector3(3.55, 0.18, -0.1),
+  const zoneWidth = (width - 44 - 74) / 2;
+  const zoneHeight = height - 44;
+  const leftEdge = 22;
+  const screenPositions = [
+    leftEdge + zoneWidth * 0.28,
+    leftEdge + zoneWidth * 0.72,
+    width - leftEdge - zoneWidth * 0.72,
+    width - leftEdge - zoneWidth * 0.28,
   ];
+  const scaleForWidth = ((zoneWidth - 76) * worldPerPixel) / (projectedWidth * 2);
+  const scaleForHeight = ((zoneHeight - 92) * worldPerPixel) / projectedHeight;
+
+  return {
+    scale: THREE.MathUtils.clamp(Math.min(scaleForWidth, scaleForHeight), 0.5, 0.9),
+    slots: screenPositions.map((screenX, index) => new THREE.Vector3(
+      (screenX / width - 0.5) * worldWidth,
+      index === 0 || index === 3 ? 0.12 : -0.08,
+      index === 0 || index === 3 ? -0.1 : 0.12,
+    )),
+  };
 }
 
 function layoutCards(order = activeOrder.value) {
   if (!host.value || !camera) return;
-  const width = host.value.clientWidth;
-  const slots = slotPositions(width);
-  deck.scale.setScalar(width < 700 ? 0.78 : width < 980 ? 0.87 : 1);
-  restingCardScale = width < 700 ? 1 : width < 980 ? 0.92 : 0.88;
-  baseCameraZ = width < 700 ? 10.8 : 10.2;
+  const { slots, scale } = cardLayout(
+    Math.max(host.value.clientWidth, 1),
+    Math.max(host.value.clientHeight, 1),
+  );
+  deck.scale.setScalar(1);
+  restingCardScale = scale;
   camera.position.z = baseCameraZ;
 
   order.forEach((id, index) => {
@@ -288,6 +331,11 @@ function easeOutCubic(value: number) {
   return 1 - Math.pow(1 - value, 3);
 }
 
+function smoothstep(value: number) {
+  const clamped = THREE.MathUtils.clamp(value, 0, 1);
+  return clamped * clamped * (3 - 2 * clamped);
+}
+
 function animate(now: number) {
   animationFrame = requestAnimationFrame(animate);
   if (!isVisible || !renderer) return;
@@ -315,24 +363,33 @@ function animate(now: number) {
         activeAnimations += 1;
         const linearProgress = Math.max(0, rawProgress);
         const progress = easeInOutQuint(linearProgress);
-        const lift = Math.sin(linearProgress * Math.PI);
+        const lift = Math.pow(Math.sin(linearProgress * Math.PI), 2);
         nextShuffleEnergy = Math.max(nextShuffleEnergy, lift);
         card.group.position.copy(animation.curve.getPoint(progress));
         card.group.position.z += lift * 2.7;
-        card.group.rotation.x = card.homeRotation.x + Math.sin(linearProgress * Math.PI * 2) * 0.42;
-        card.group.rotation.y = easeOutCubic(linearProgress) * Math.PI * 2 * animation.turns;
-        card.group.rotation.z = card.homeRotation.z + Math.sin(linearProgress * Math.PI * 3) * 0.3;
+        card.group.rotation.x = THREE.MathUtils.lerp(animation.startRotation.x, card.homeRotation.x, progress)
+          + Math.sin(linearProgress * Math.PI * 2) * lift * 0.42;
+        card.group.rotation.y = THREE.MathUtils.lerp(animation.startRotation.y, 0, progress)
+          + easeOutCubic(linearProgress) * Math.PI * 2 * animation.turns;
+        card.group.rotation.z = THREE.MathUtils.lerp(animation.startRotation.z, card.homeRotation.z, progress)
+          + Math.sin(linearProgress * Math.PI * 3) * lift * 0.3;
         card.group.scale.setScalar(restingCardScale * (1 + lift * 0.075));
       } else {
         card.group.position.copy(card.target);
         card.group.rotation.copy(card.homeRotation);
         card.group.scale.setScalar(restingCardScale);
         card.shuffle = undefined;
+        card.settledAt = elapsed;
       }
     } else if (!reducedMotion) {
-      card.group.position.y = card.target.y + Math.sin(elapsed * 0.72 + floatIndex * 1.4) * 0.055;
-      card.group.rotation.x = card.homeRotation.x + Math.sin(elapsed * 0.48 + floatIndex) * 0.018;
-      card.group.rotation.z = card.homeRotation.z + Math.cos(elapsed * 0.4 + floatIndex) * 0.012;
+      const idleBlend = card.settledAt == null ? 1 : smoothstep((elapsed - card.settledAt) / 0.55);
+      card.group.position.y = card.target.y
+        + Math.sin(elapsed * 0.72 + floatIndex * 1.4) * 0.055 * idleBlend;
+      card.group.rotation.x = card.homeRotation.x
+        + Math.sin(elapsed * 0.48 + floatIndex) * 0.018 * idleBlend;
+      card.group.rotation.z = card.homeRotation.z
+        + Math.cos(elapsed * 0.4 + floatIndex) * 0.012 * idleBlend;
+      if (idleBlend === 1) card.settledAt = undefined;
     }
   });
 
@@ -380,7 +437,11 @@ function playShuffle(nextOrder: string[]) {
     return new Promise<void>((resolve) => window.setTimeout(resolve, 260));
   }
 
-  const slots = slotPositions(host.value?.clientWidth || 900);
+  const { slots, scale } = cardLayout(
+    Math.max(host.value?.clientWidth || 900, 1),
+    Math.max(host.value?.clientHeight || 600, 1),
+  );
+  restingCardScale = scale;
   const now = (performance.now() - startTime) / 1000;
 
   nextOrder.forEach((id, index) => {
@@ -404,10 +465,11 @@ function playShuffle(nextOrder: string[]) {
     );
     card.shuffle = {
       curve,
+      startRotation: card.group.rotation.clone(),
       startedAt: now,
       delay: index * 0.065,
-      duration: 1.82,
-      turns: 1.25 + (index % 2) * 0.5,
+      duration: 2.05,
+      turns: 1 + (index % 2),
     };
   });
 
@@ -472,7 +534,7 @@ onMounted(() => {
 
     props.cards.forEach(makeCard);
     makeParticles();
-    layoutCards();
+    resize();
     resizeObserver = new ResizeObserver(resize);
     resizeObserver.observe(host.value as HTMLElement);
     document.addEventListener("visibilitychange", handleVisibility);
