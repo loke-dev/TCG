@@ -85,6 +85,7 @@ let targetPointerY = 0;
 let reducedMotion = false;
 let isVisible = true;
 let baseCameraZ = 10.2;
+let restingCardScale = 1;
 let shuffleEnergy = 0;
 let shuffleHalo: THREE.Mesh<THREE.RingGeometry, THREE.MeshBasicMaterial>;
 const objects = new Map<string, CardObject>();
@@ -252,6 +253,7 @@ function layoutCards(order = activeOrder.value) {
   const width = host.value.clientWidth;
   const slots = slotPositions(width);
   deck.scale.setScalar(width < 700 ? 0.78 : width < 980 ? 0.87 : 1);
+  restingCardScale = width < 700 ? 1 : width < 980 ? 0.92 : 0.88;
   baseCameraZ = width < 700 ? 10.8 : 10.2;
   camera.position.z = baseCameraZ;
 
@@ -259,7 +261,10 @@ function layoutCards(order = activeOrder.value) {
     const card = objects.get(id);
     if (!card) return;
     card.target.copy(slots[index]);
-    if (!card.shuffle) card.group.position.copy(card.target);
+    if (!card.shuffle) {
+      card.group.position.copy(card.target);
+      card.group.scale.setScalar(restingCardScale);
+    }
   });
 }
 
@@ -317,11 +322,11 @@ function animate(now: number) {
         card.group.rotation.x = card.homeRotation.x + Math.sin(linearProgress * Math.PI * 2) * 0.42;
         card.group.rotation.y = easeOutCubic(linearProgress) * Math.PI * 2 * animation.turns;
         card.group.rotation.z = card.homeRotation.z + Math.sin(linearProgress * Math.PI * 3) * 0.3;
-        card.group.scale.setScalar(1 + lift * 0.075);
+        card.group.scale.setScalar(restingCardScale * (1 + lift * 0.075));
       } else {
         card.group.position.copy(card.target);
         card.group.rotation.copy(card.homeRotation);
-        card.group.scale.setScalar(1);
+        card.group.scale.setScalar(restingCardScale);
         card.shuffle = undefined;
       }
     } else if (!reducedMotion) {
