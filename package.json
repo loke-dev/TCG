@@ -1,19 +1,19 @@
 {
+  "packageManager": "pnpm@11.13.0",
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
+    "deploy": "pnpm run generate && wrangler pages deploy .output/public --project-name tcg",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "npx nuxi prepare"
   },
   "devDependencies": {
     "@vite-pwa/nuxt": "^0.10.5",
-    "nuxt": "^3.13.2"
+    "nuxt": "^3.13.2",
+    "wrangler": "^4.0.0"
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "*"
-  },
-  "dependencies": {
-    "@vercel/analytics": "^2.0.1"
   }
 }
